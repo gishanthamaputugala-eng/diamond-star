@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diamond Star Investment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --gold:#FFD700;--gold-dark:#B8860B;--gold-light:#FFF0A0;
+  --navy:#0A0E2A;--navy-mid:#111840;--navy-light:#1A2260;
+  --teal:#00C8B0;--white:#FFFFFF;--soft:#C8D0E8;--red:#FF4B6E;--green:#00E676;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--navy);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%,rgba(255,215,0,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 30% 55%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 25%,rgba(255,215,0,.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 70% 75%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 85% 15%,rgba(255,215,0,.4) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 20% 80%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 90% 50%,rgba(255,215,0,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 90%,rgba(255,255,255,.4) 0%,transparent 100%);
+}
+.app-shell{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{width:220px;min-width:220px;background:linear-gradient(180deg,rgba(17,24,64,.98) 0%,rgba(10,14,42,.98) 100%);border-right:1px solid rgba(255,215,0,.15);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:32px 0 24px;}
+.sidebar-brand{text-align:center;padding:0 20px 28px;border-bottom:1px solid rgba(255,215,0,.12);}
+.sidebar-diamond{font-size:38px;display:block;margin-bottom:4px;filter:drop-shadow(0 0 10px rgba(255,215,0,.8));animation:pulse 3s ease-in-out infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 10px rgba(255,215,0,.8));}50%{filter:drop-shadow(0 0 22px rgba(255,215,0,1));}}
+.sidebar-title{font-family:'Cinzel',serif;font-size:16px;font-weight:900;letter-spacing:.1em;background:linear-gradient(135deg,var(--gold-light),var(--gold),#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sidebar-tag{font-size:9px;letter-spacing:.2em;color:var(--soft);opacity:.5;text-transform:uppercase;margin-top:2px;}
+.sidebar-nav{display:flex;flex-direction:column;gap:4px;padding:20px 12px;flex:1;}
+.side-tab{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;cursor:pointer;border:none;background:transparent;color:var(--soft);opacity:.55;transition:all .2s;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;letter-spacing:.04em;text-align:left;width:100%;}
+.side-tab .t-icon{font-size:18px;flex-shrink:0;}
+.side-tab:hover{opacity:.85;background:rgba(255,215,0,.06);}
+.side-tab.active{opacity:1;color:var(--gold);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);}
+.sidebar-footer{padding:0 16px;font-size:10px;color:var(--soft);opacity:.3;text-align:center;}
+.main-content{flex:1;min-width:0;overflow-y:auto;}
+.content-inner{max-width:820px;margin:0 auto;padding:36px 32px 60px;}
+.bottom-nav{display:none;}
+@media(max-width:767px){
+  .app-shell{flex-direction:column;}
+  .sidebar{display:none;}
+  .main-content{padding-bottom:80px;}
+  .content-inner{padding:20px 14px 20px;}
+  .bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(10,14,42,.97);border-top:1px solid rgba(255,215,0,.18);backdrop-filter:blur(12px);}
+  .nav-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 12px;cursor:pointer;border:none;background:transparent;color:var(--soft);opacity:.5;transition:all .2s;font-family:'Inter',sans-serif;}
+  .nav-tab .tab-icon{font-size:19px;margin-bottom:2px;}
+  .nav-tab .tab-label{font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
+  .nav-tab.active{opacity:1;color:var(--gold);}
+  .mobile-header{display:block;text-align:center;padding:22px 16px 18px;background:linear-gradient(180deg,rgba(107,63,160,.25) 0%,transparent 100%);border-bottom:1px solid rgba(255,215,0,.15);position:relative;z-index:1;}
+  .mobile-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .mobile-diamond{font-size:34px;display:block;margin-bottom:4px;filter:drop-shadow(0 0 10px rgba(255,215,0,.8));animation:pulse 3s ease-in-out infinite;}
+  .mobile-title{font-family:'Cinzel',serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold),#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .mobile-tag{font-size:10px;letter-spacing:.18em;color:var(--soft);opacity:.6;text-transform:uppercase;}
+}
+@media(min-width:768px){.mobile-header{display:none;}}
+.screen{display:none;}.screen.active{display:block;}
+.section-title{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,215,0,.4),transparent);}
+.card{background:linear-gradient(135deg,rgba(26,34,96,.8) 0%,rgba(17,24,64,.92) 100%);border:1px solid rgba(255,215,0,.15);border-radius:16px;padding:24px;margin-bottom:22px;backdrop-filter:blur(10px);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;}
+.input-group{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.input-group label,.form-group label{font-size:11px;letter-spacing:.12em;color:var(--soft);text-transform:uppercase;opacity:.72;}
+.input-wrapper{position:relative;display:flex;align-items:center;}
+.currency-prefix{position:absolute;left:14px;font-size:17px;color:var(--gold);font-weight:700;pointer-events:none;z-index:1;}
+input[type="number"]{width:100%;padding:14px 16px 14px 50px;background:rgba(10,14,42,.8);border:1.5px solid rgba(255,215,0,.25);border-radius:10px;color:var(--white);font-size:20px;font-weight:600;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;}
+input[type="number"]:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,215,0,.1);}
+input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
+.tier-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:.05em;margin-top:10px;transition:all .3s;}
+.tier-badge.tier-1{background:rgba(107,63,160,.3);border:1px solid rgba(107,63,160,.6);color:#C8A0FF;}
+.tier-badge.tier-2{background:rgba(0,200,176,.2);border:1px solid rgba(0,200,176,.5);color:var(--teal);}
+.tier-badge.tier-3{background:rgba(255,165,0,.2);border:1px solid rgba(255,165,0,.5);color:#FFA500;}
+.tier-badge.tier-4{background:rgba(0,230,118,.2);border:1px solid rgba(0,230,118,.5);color:var(--green);}
+.tier-badge.tier-5{background:rgba(255,215,0,.2);border:1px solid rgba(255,215,0,.6);color:var(--gold);}
+.tier-badge.none{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);color:var(--soft);}
+.period-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.period-btn{background:rgba(10,14,42,.8);border:1.5px solid rgba(255,215,0,.2);border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;color:var(--soft);font-family:'Inter',sans-serif;}
+.period-btn .months{font-size:20px;font-weight:700;color:var(--white);display:block;line-height:1.2;}
+.period-btn .lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;display:block;margin-top:3px;}
+.period-btn .rpct{font-size:12px;font-weight:600;margin-top:6px;display:block;}
+.period-btn:hover{border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.05);}
+.period-btn.active{border-color:var(--gold);background:rgba(255,215,0,.1);box-shadow:0 0 14px rgba(255,215,0,.2);}
+.period-btn.active .months{color:var(--gold);}
+.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:600px){.results-grid{grid-template-columns:1fr 1fr;}}
+.result-card{background:rgba(10,14,42,.7);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 14px;text-align:center;}
+.result-card.hl{border-color:rgba(255,215,0,.3);background:linear-gradient(135deg,rgba(255,215,0,.07),rgba(10,14,42,.9));}
+.result-label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--soft);opacity:.6;margin-bottom:7px;}
+.result-value{font-size:20px;font-weight:700;line-height:1.1;}
+@media(max-width:600px){.result-value{font-size:17px;}}
+.rv-gold{color:var(--gold);}.rv-teal{color:var(--teal);}.rv-green{color:var(--green);}.rv-purple{color:#C8A0FF;}
+.result-sub{font-size:11px;color:var(--soft);opacity:.5;margin-top:4px;}
+.payment-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:50px;font-size:10px;font-weight:600;margin-top:6px;}
+.pb-weekly{background:rgba(107,63,160,.25);color:#C8A0FF;border:1px solid rgba(107,63,160,.35);}
+.pb-both{background:rgba(0,200,176,.18);color:var(--teal);border:1px solid rgba(0,200,176,.35);}
+hr.divider{border:none;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.2),transparent);margin:18px 0;}
+.capital-info{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--soft);}
+.capital-bar{background:rgba(10,14,42,.8);border-radius:10px;height:9px;overflow:hidden;margin:8px 0;border:1px solid rgba(255,255,255,.07);}
+.capital-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold-dark),var(--gold));transition:width .6s cubic-bezier(.4,0,.2,1);}
+.capital-pct{font-size:28px;font-weight:700;color:var(--gold);}
+.note{background:rgba(255,75,110,.09);border:1px solid rgba(255,75,110,.28);border-radius:10px;padding:13px 16px;font-size:12px;color:#FFB0C0;line-height:1.7;margin-top:16px;}
+.empty-state{text-align:center;padding:40px 16px;opacity:.38;}
+.empty-state .icon{font-size:40px;margin-bottom:10px;display:block;}
+.empty-state p{font-size:13px;color:var(--soft);}
+.plans-table{width:100%;border-collapse:collapse;font-size:13px;}
+.plans-table th{background:rgba(255,215,0,.09);color:var(--gold);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:11px 12px;text-align:left;border-bottom:1px solid rgba(255,215,0,.18);}
+.plans-table td{padding:13px 12px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--soft);vertical-align:middle;}
+.plans-table tr:last-child td{border-bottom:none;}
+.plans-table tr:hover td{background:rgba(255,215,0,.03);}
+.plan-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:700;background:rgba(255,215,0,.13);border:1px solid rgba(255,215,0,.3);color:var(--gold);}
+.rate-val{font-weight:700;font-size:14px;}.rate-green{color:var(--green);}.rate-teal{color:var(--teal);}
+.cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px;}
+@media(max-width:600px){.cap-grid{grid-template-columns:1fr 1fr;}}
+.cap-card{background:rgba(10,14,42,.7);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;text-align:center;}
+.cap-months{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);opacity:.55;margin-bottom:6px;}
+.cap-pct{font-size:28px;font-weight:700;}
+.cap-sub{font-size:11px;color:var(--soft);opacity:.5;margin-top:3px;}
+/* FORM */
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.form-row{grid-template-columns:1fr;}}
+.form-group input,.form-group select,.form-group textarea{padding:12px 14px;background:rgba(10,14,42,.9);border:1.5px solid rgba(255,215,0,.2);border-radius:10px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,215,0,.08);}
+.form-group select option{background:#111840;}
+.other-bank-input{display:none;margin-top:8px;}
+.other-bank-input.show{display:block;}
+.invest-summary{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.s-label{font-size:10px;color:var(--soft);opacity:.6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+.s-value{font-size:15px;font-weight:700;color:var(--gold);}
+.submit-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--gold-dark),var(--gold),#FFA500);border:none;border-radius:10px;color:var(--navy);font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:.08em;cursor:pointer;margin-top:6px;transition:all .2s;box-shadow:0 4px 20px rgba(255,215,0,.3);}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(255,215,0,.45);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.error-msg{background:rgba(255,75,110,.12);border:1px solid rgba(255,75,110,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#FFB0C0;margin-bottom:12px;display:none;}
+.success-state{text-align:center;padding:24px 0;}
+.success-icon{font-size:54px;display:block;margin-bottom:14px;}
+.success-title{font-family:'Cinzel',serif;font-size:20px;color:var(--green);margin-bottom:8px;}
+.success-msg{font-size:13px;color:var(--soft);line-height:1.7;opacity:.8;}
+.success-ref{margin-top:14px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:8px;padding:12px 16px;font-size:14px;color:var(--green);letter-spacing:.05em;font-weight:700;}
+.done-btn{margin-top:18px;padding:12px 32px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:50px;color:var(--navy);font-family:'Cinzel',serif;font-size:13px;font-weight:700;cursor:pointer;}
+/* CONTACT */
+.contact-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;margin-bottom:10px;}
+.ci-green{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);}
+.ci-teal{background:rgba(0,200,176,.07);border:1px solid rgba(0,200,176,.2);}
+.ci-gold{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.18);}
+.ci-icon{font-size:22px;flex-shrink:0;}
+.ci-label{font-size:10px;color:var(--soft);opacity:.6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;}
+.ci-value{font-size:15px;font-weight:600;}
+
+/* ════ USER PANEL STYLES ════ */
+.user-login-box{max-width:420px;margin:0 auto;}
+.ref-input-wrap{position:relative;display:flex;gap:10px;align-items:stretch;}
+.ref-input-wrap input{flex:1;padding:14px 16px;background:rgba(10,14,42,.8);border:1.5px solid rgba(255,215,0,.25);border-radius:10px;color:var(--white);font-size:16px;font-family:'Inter',sans-serif;outline:none;letter-spacing:.08em;transition:border-color .2s;}
+.ref-input-wrap input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,215,0,.1);}
+.ref-lookup-btn{padding:0 22px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:var(--navy);font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.ref-lookup-btn:hover{transform:translateY(-1px);}
+
+/* Status badge */
+.status-badge{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:50px;font-size:13px;font-weight:700;letter-spacing:.06em;}
+.status-pending{background:rgba(255,165,0,.18);border:1px solid rgba(255,165,0,.5);color:#FFA500;}
+.status-approved{background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.5);color:var(--green);}
+.status-rejected{background:rgba(255,75,110,.15);border:1px solid rgba(255,75,110,.5);color:var(--red);}
+
+/* User detail rows */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:550px){.detail-grid{grid-template-columns:1fr;}}
+.detail-item{background:rgba(10,14,42,.7);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 16px;}
+.detail-item .d-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);opacity:.55;margin-bottom:5px;}
+.detail-item .d-value{font-size:15px;font-weight:600;color:var(--white);}
+
+/* Profit mini cards */
+.profit-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(max-width:500px){.profit-row{grid-template-columns:1fr 1fr;}}
+.profit-mini{background:rgba(10,14,42,.7);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;text-align:center;}
+.profit-mini .pm-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);opacity:.55;margin-bottom:6px;}
+.profit-mini .pm-value{font-size:18px;font-weight:700;}
+
+/* Payment history */
+.payment-list{display:flex;flex-direction:column;gap:10px;}
+.payment-item{display:flex;justify-content:space-between;align-items:center;background:rgba(10,14,42,.6);border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:13px 16px;}
+.payment-item .pi-date{font-size:12px;color:var(--soft);opacity:.6;}
+.payment-item .pi-amount{font-size:16px;font-weight:700;color:var(--green);}
+.payment-item .pi-note{font-size:11px;color:var(--soft);opacity:.5;margin-top:2px;}
+.no-payments{text-align:center;padding:24px;opacity:.4;font-size:13px;color:var(--soft);}
+
+/* WhatsApp contact btn */
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:rgba(37,211,102,.15);border:1.5px solid rgba(37,211,102,.4);border-radius:10px;color:#25d366;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;margin-top:8px;}
+.wa-btn:hover{background:rgba(37,211,102,.25);transform:translateY(-1px);}
+</style>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, doc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4vBlSWM1MuOx2h8NpICzoRXqnGaPYdVM",
+    authDomain: "diamond-star-92816.firebaseapp.com",
+    projectId: "diamond-star-92816",
+    storageBucket: "diamond-star-92816.firebasestorage.app",
+    messagingSenderId: "3019462367",
+    appId: "1:3019462367:web:c381ad57f724987f3efb6a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Make db available globally
+  window._db = db;
+  window._fbModules = { collection, addDoc, doc, getDoc, query, where, getDocs };
+  window._firebaseReady = true;
+  console.log('Firebase connected!');
+</script>
+</head>
+<body>
+
+<div class="mobile-header">
+  <span class="mobile-diamond">💎</span>
+  <div class="mobile-title">DIAMOND STAR</div>
+  <div class="mobile-tag">Investment Platform</div>
+</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="sidebar-diamond">💎</span>
+      <div class="sidebar-title">DIAMOND STAR</div>
+      <div class="sidebar-tag">Investment Platform</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="side-tab active" onclick="showScreen('calc',this)"><span class="t-icon">🧮</span> Calculator</button>
+      <button class="side-tab" onclick="showScreen('plans',this)"><span class="t-icon">📋</span> Plans</button>
+      <button class="side-tab" onclick="showScreen('register',this)"><span class="t-icon">✍️</span> Register</button>
+      <button class="side-tab" onclick="showScreen('mypanel',this)"><span class="t-icon">👤</span> My Panel</button>
+      <button class="side-tab" onclick="showScreen('about',this)"><span class="t-icon">ℹ️</span> About</button>
+    </nav>
+    <div class="sidebar-footer">© 2025 Diamond Star</div>
+  </aside>
+
+  <main class="main-content">
+    <div class="content-inner">
+
+      <!-- ══ SCREEN 1: CALCULATOR ══ -->
+      <div class="screen active" id="screen-calc">
+        <div class="section-title">Investment Amount</div>
+        <div class="card">
+          <div class="input-group">
+            <label>Enter Your Investment (Rs.)</label>
+            <div class="input-wrapper">
+              <span class="currency-prefix">Rs.</span>
+              <input type="number" id="investAmount" placeholder="5,000" min="5000" step="1000" oninput="calculate()">
+            </div>
+          </div>
+          <div id="tierBadge" class="tier-badge none">⬆ Minimum investment: Rs. 5,000</div>
+        </div>
+        <div class="section-title">Capital Return Period</div>
+        <div class="card">
+          <div class="period-grid">
+            <button class="period-btn active" onclick="selectPeriod(3,this)"><span class="months">3</span><span class="lbl">Months</span><span class="rpct" style="color:var(--green)">80% Back</span></button>
+            <button class="period-btn" onclick="selectPeriod(6,this)"><span class="months">6</span><span class="lbl">Months</span><span class="rpct" style="color:var(--teal)">70% Back</span></button>
+            <button class="period-btn" onclick="selectPeriod(9,this)"><span class="months">9</span><span class="lbl">Months</span><span class="rpct" style="color:#C8A0FF">60% Back</span></button>
+            <button class="period-btn" onclick="selectPeriod(12,this)"><span class="months">12</span><span class="lbl">Months</span><span class="rpct" style="color:#FFA500">50% Back</span></button>
+          </div>
+        </div>
+        <div class="section-title">Profit Breakdown</div>
+        <div class="card">
+          <div id="emptyState" class="empty-state"><span class="icon">📊</span><p>Enter an investment amount above</p></div>
+          <div id="resultsContent" style="display:none">
+            <div class="results-grid">
+              <div class="result-card"><div class="result-label">Daily Profit</div><div class="result-value rv-gold" id="dailyProfit">—</div><div class="result-sub" id="dailyRate"></div><div id="dailyBadge"></div></div>
+              <div class="result-card hl"><div class="result-label">Weekly Profit</div><div class="result-value rv-teal" id="weeklyProfit">—</div><div class="result-sub" id="weeklyRate"></div><div id="paymentMethod"></div></div>
+              <div class="result-card"><div class="result-label">Total Profit (Period)</div><div class="result-value rv-green" id="periodTotal">—</div><div class="result-sub" id="periodLabel"></div></div>
+              <div class="result-card"><div class="result-label">Capital Returned</div><div class="result-value rv-purple" id="capitalReturn">—</div><div class="result-sub" id="capitalPctSub"></div></div>
+            </div>
+            <hr class="divider">
+            <div class="capital-info"><span>Capital back after <strong id="periodMonths" style="color:var(--white)">3</strong> months</span><span class="capital-pct" id="capitalPctBig">80%</span></div>
+            <div class="capital-bar"><div class="capital-fill" id="capitalBar" style="width:80%"></div></div>
+            <div class="capital-info" style="font-size:11px;opacity:.6;margin-top:4px;"><span>Invested: <strong id="investedAmt" style="color:var(--white)">—</strong></span><span>Returned: <strong id="returnAmt" style="color:var(--gold)">—</strong></span></div>
+            <div class="note" id="noteBox"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN 2: PLANS ══ -->
+      <div class="screen" id="screen-plans">
+        <div class="section-title">Investment Plans</div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          <table class="plans-table">
+            <thead><tr><th>#</th><th>Investment Range (Rs.)</th><th>Daily %</th><th>Weekly %</th><th>Payment</th></tr></thead>
+            <tbody>
+              <tr><td><span class="plan-num">1</span></td><td>5,000 – 50,000</td><td style="opacity:.4">—</td><td><span class="rate-val rate-teal">2.5%</span></td><td><span style="font-size:11px;color:#C8A0FF">Weekly Only</span></td></tr>
+              <tr><td><span class="plan-num">2</span></td><td>51,000 – 100,000</td><td><span class="rate-val rate-green">0.75%</span></td><td><span class="rate-val rate-teal">3.75%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
+              <tr><td><span class="plan-num">3</span></td><td>101,000 – 500,000</td><td><span class="rate-val rate-green">1.00%</span></td><td><span class="rate-val rate-teal">5.00%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
+              <tr><td><span class="plan-num">4</span></td><td>501,000 – 1,000,000</td><td><span class="rate-val rate-green">1.25%</span></td><td><span class="rate-val rate-teal">6.25%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
+              <tr><td><span class="plan-num">5</span></td><td>1,001,000 & Above</td><td><span class="rate-val rate-green">1.50%</span></td><td><span class="rate-val rate-teal">7.50%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="section-title">Capital Return Plan</div>
+        <div class="card">
+          <div class="cap-grid">
+            <div class="cap-card"><div class="cap-months">3 Months</div><div class="cap-pct" style="color:var(--green)">80%</div><div class="cap-sub">capital returned</div></div>
+            <div class="cap-card"><div class="cap-months">6 Months</div><div class="cap-pct" style="color:var(--teal)">70%</div><div class="cap-sub">capital returned</div></div>
+            <div class="cap-card"><div class="cap-months">9 Months</div><div class="cap-pct" style="color:#C8A0FF">60%</div><div class="cap-sub">capital returned</div></div>
+            <div class="cap-card"><div class="cap-months">12 Months</div><div class="cap-pct" style="color:#FFA500">50%</div><div class="cap-sub">capital returned</div></div>
+          </div>
+          <div class="note" style="margin-top:16px;"><strong>📌 Note:</strong> Minimum investment Rs. 5,000. Investments below Rs. 50,000 receive <strong>weekly profit only</strong>.</div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN 3: REGISTER ══ -->
+      <div class="screen" id="screen-register">
+        <div id="regFormView">
+          <div class="section-title">Register</div>
+          <div class="card">
+            <div class="invest-summary">
+              <div><div class="s-label">Amount</div><div class="s-value" id="regAmt">Not set</div></div>
+              <div><div class="s-label">Period</div><div class="s-value" id="regPeriod">—</div></div>
+              <div><div class="s-label">Weekly Profit</div><div class="s-value" id="regWeekly">—</div></div>
+            </div>
+            <div class="error-msg" id="errorMsg"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Full Name *</label><input type="text" id="regName" placeholder="Your full name"></div>
+              <div class="form-group"><label>NIC Number *</label><input type="text" id="regNIC" placeholder="XXXXXXXXXV"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Phone Number *</label><input type="tel" id="regPhone" placeholder="07X XXX XXXX"></div>
+              <div class="form-group"><label>WhatsApp Number</label><input type="tel" id="regWhatsApp" placeholder="Same if same"></div>
+            </div>
+            <div class="form-group">
+              <label>Bank Name *</label>
+              <select id="regBank" onchange="toggleOtherBank(this.value)">
+                <option value="">-- Select Bank --</option>
+                <option>Bank of Ceylon (BOC)</option>
+                <option>People's Bank</option>
+                <option>Commercial Bank</option>
+                <option>Hatton National Bank (HNB)</option>
+                <option>Sampath Bank</option>
+                <option>Nations Trust Bank (NTB)</option>
+                <option>Seylan Bank</option>
+                <option>DFCC Bank</option>
+                <option>Pan Asia Bank</option>
+                <option>NSB</option>
+                <option value="Other">Other (Type below)</option>
+              </select>
+              <div class="other-bank-input" id="otherBankWrap">
+                <input type="text" id="otherBankName" placeholder="ඔබේ bank name type කරන්න...">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Account Number *</label><input type="text" id="regAccNo" placeholder="Account number"></div>
+              <div class="form-group"><label>Account Holder Name *</label><input type="text" id="regAccName" placeholder="Name on account"></div>
+            </div>
+            <button class="submit-btn" id="submitBtn" onclick="submitRegister()">✦ Submit Registration</button>
+          </div>
+        </div>
+        <div id="regSuccessView" style="display:none">
+          <div class="card">
+            <div class="success-state">
+              <span class="success-icon">✅</span>
+              <div class="success-title">Registration Submitted!</div>
+              <p class="success-msg">ඔබේ registration සාර්ථකව ලැබුණා!<br>Admin ට details යවන්න පහළ button eka click කරන්න.</p>
+              <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:16px;margin:16px 0;text-align:left;">
+                <div style="font-size:11px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">ඊළඟ Steps:</div>
+                <div style="font-size:13px;color:var(--soft);line-height:2.2;">
+                  1️⃣ පහළ button ෙකන් Admin ට WhatsApp message යවන්න<br>
+                  2️⃣ Admin ඔබේ details confirm කරනවා<br>
+                  3️⃣ Mudal transfer කරන්න කියයි<br>
+                  4️⃣ Transfer කළාට පස්සේ Admin ඔබට <strong style="color:var(--gold)">Reference Number</strong> දෙනවා<br>
+                  5️⃣ ඒ Reference Number ෙකන් My Panel ෙකදී ඔබේ details බලන්න
+                </div>
+              </div>
+              <a id="adminWhatsAppBtn" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:rgba(37,211,102,.15);border:1.5px solid rgba(37,211,102,.5);border-radius:12px;color:#25d366;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px;">
+                <span style="font-size:22px;">📱</span> Admin ට WhatsApp Message යවන්න
+              </a>
+              <button onclick="resetRegForm()" style="background:rgba(255,255,255,.07);color:var(--soft);border:1px solid rgba(255,255,255,.12);padding:10px 24px;border-radius:50px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;">← නැවත Register කරන්න</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN 4: MY PANEL ══ -->
+      <div class="screen" id="screen-mypanel">
+
+        <!-- LOGIN VIEW -->
+        <div id="userLoginView">
+          <div class="section-title">My Panel</div>
+          <div class="card user-login-box">
+            <div style="text-align:center;margin-bottom:24px;">
+              <span style="font-size:42px;display:block;margin-bottom:10px;">👤</span>
+              <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold);margin-bottom:6px;">View Your Investment</div>
+              <div style="font-size:12px;color:var(--soft);opacity:.6;">Admin දුන් Reference Number ෙකන් ඔබේ details බලන්න</div>
+            </div>
+            <div class="error-msg" id="loginError"></div>
+            <div class="form-group">
+              <label>Reference Number</label>
+              <div class="ref-input-wrap">
+                <input type="text" id="refInput" placeholder="DS-XXXXXXXX" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+                <button class="ref-lookup-btn" onclick="lookupUser()">View →</button>
+              </div>
+            </div>
+            <p style="font-size:11px;color:var(--soft);opacity:.5;text-align:center;margin-top:12px;">Reference number eka registration ෙකදී ලැබුණා</p>
+          </div>
+        </div>
+
+        <!-- USER DASHBOARD VIEW -->
+        <div id="userDashView" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
+            <div class="section-title" style="margin-bottom:0;flex:1">My Investment</div>
+            <button onclick="logoutUser()" style="background:rgba(255,75,110,.15);border:1px solid rgba(255,75,110,.3);color:var(--red);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Logout</button>
+          </div>
+
+          <!-- STATUS CARD -->
+          <div class="card" style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+              <div>
+                <div style="font-size:11px;color:var(--soft);opacity:.6;margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em;">Account Status</div>
+                <div id="userStatusBadge" class="status-badge status-pending">⏳ Pending</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px;color:var(--soft);opacity:.6;margin-bottom:4px;">Reference</div>
+                <div style="font-size:14px;font-weight:700;color:var(--gold);letter-spacing:.08em;" id="displayRef">DS-XXXXX</div>
+              </div>
+            </div>
+            <!-- APPROVED: payment info -->
+            <div id="approvedInfo" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);">
+              <div style="font-size:11px;color:var(--soft);opacity:.6;margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em;">Approved Details</div>
+              <div class="form-row" style="gap:10px;">
+                <div class="detail-item"><div class="d-label">Approved Date</div><div class="d-value" id="approvedDate">—</div></div>
+                <div class="detail-item"><div class="d-label">Next Payment</div><div class="d-value" id="nextPayment">—</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- INVESTMENT DETAILS -->
+          <div class="section-title">Investment Details</div>
+          <div class="card">
+            <div class="detail-grid">
+              <div class="detail-item"><div class="d-label">Full Name</div><div class="d-value" id="u-name">—</div></div>
+              <div class="detail-item"><div class="d-label">Phone</div><div class="d-value" id="u-phone">—</div></div>
+              <div class="detail-item"><div class="d-label">Investment Amount</div><div class="d-value rv-gold" id="u-amount">—</div></div>
+              <div class="detail-item"><div class="d-label">Plan</div><div class="d-value" id="u-plan">—</div></div>
+              <div class="detail-item"><div class="d-label">Period</div><div class="d-value" id="u-period">—</div></div>
+              <div class="detail-item"><div class="d-label">Bank</div><div class="d-value" id="u-bank">—</div></div>
+              <div class="detail-item"><div class="d-label">Account Number</div><div class="d-value" id="u-accno">—</div></div>
+              <div class="detail-item"><div class="d-label">Registered On</div><div class="d-value" id="u-date">—</div></div>
+            </div>
+          </div>
+
+          <!-- PROFIT BREAKDOWN -->
+          <div class="section-title">Profit Breakdown</div>
+          <div class="card">
+            <div class="profit-row">
+              <div class="profit-mini"><div class="pm-label">Daily Profit</div><div class="pm-value rv-gold" id="u-daily">—</div></div>
+              <div class="profit-mini"><div class="pm-label">Weekly Profit</div><div class="pm-value rv-teal" id="u-weekly">—</div></div>
+              <div class="profit-mini"><div class="pm-label">Capital Return</div><div class="pm-value rv-purple" id="u-capital">—</div></div>
+            </div>
+            <div style="background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.15);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--soft);line-height:1.7;" id="u-profitNote"></div>
+          </div>
+
+          <!-- PAYMENT HISTORY -->
+          <div class="section-title">Payment History</div>
+          <div class="card">
+            <div id="paymentHistoryList">
+              <div class="no-payments">💳 Admin payments enter කළාට පස්සේ payments මෙහෙ පෙනෙනවා</div>
+            </div>
+          </div>
+
+          <!-- CONTACT ADMIN -->
+          <div class="section-title">Contact Admin</div>
+          <div class="card">
+            <p style="font-size:13px;color:var(--soft);opacity:.75;margin-bottom:12px;line-height:1.6;">ප්‍රශ්නයක් හෝ help ඕනෑ නම් admin ව WhatsApp ෙකන් contact කරන්න.</p>
+            <a id="waContactBtn" class="wa-btn" href="#" target="_blank">
+              <span style="font-size:20px;">📱</span> WhatsApp Admin
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN 5: ABOUT ══ -->
+      <div class="screen" id="screen-about">
+        <div class="section-title">About Us</div>
+        <div class="card" style="text-align:center;padding:32px 24px;">
+          <span style="font-size:54px;display:block;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(255,215,0,.7));">💎</span>
+          <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">DIAMOND STAR</div>
+          <div style="font-size:11px;letter-spacing:.2em;color:var(--soft);opacity:.55;text-transform:uppercase;margin-bottom:18px;">Investment Platform</div>
+          <p style="font-size:14px;color:var(--soft);line-height:1.8;opacity:.85;max-width:420px;margin:0 auto;">Diamond Star යනු විශ්වාසදායී ආයෝජන වේදිකාවකි. ඔබේ මුදල් ආරක්ෂිතව ආයෝජනය කර සතිපතා හා දිනපතා ලාභ ලබා ගන්න.</p>
+        </div>
+        <div class="section-title">Contact Us</div>
+        <div class="card">
+          <div class="contact-item ci-green"><span class="ci-icon">📱</span><div><div class="ci-label">WhatsApp</div><div class="ci-value" style="color:var(--green)">+94 XX XXX XXXX</div></div></div>
+          <div class="contact-item ci-teal"><span class="ci-icon">✉️</span><div><div class="ci-label">Email</div><div class="ci-value" style="color:var(--teal)">info@diamondstar.lk</div></div></div>
+          <div class="contact-item ci-gold"><span class="ci-icon">🕐</span><div><div class="ci-label">Support Hours</div><div class="ci-value" style="color:var(--gold)">8:00 AM – 10:00 PM Daily</div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-tab active" onclick="showScreen('calc',this)"><span class="tab-icon">🧮</span><span class="tab-label">Calc</span></button>
+  <button class="nav-tab" onclick="showScreen('plans',this)"><span class="tab-icon">📋</span><span class="tab-label">Plans</span></button>
+  <button class="nav-tab" onclick="showScreen('register',this)"><span class="tab-icon">✍️</span><span class="tab-label">Register</span></button>
+  <button class="nav-tab" onclick="showScreen('mypanel',this)"><span class="tab-icon">👤</span><span class="tab-label">My Panel</span></button>
+  <button class="nav-tab" onclick="showScreen('about',this)"><span class="tab-icon">ℹ️</span><span class="tab-label">About</span></button>
+</nav>
+
+<script>
+const TIERS=[
+  {min:5000,   max:50000,   daily:null, weekly:2.5,  label:'Plan 01',payment:'weekly'},
+  {min:51000,  max:100000,  daily:0.75, weekly:3.75, label:'Plan 02',payment:'both'},
+  {min:101000, max:500000,  daily:1.0,  weekly:5.0,  label:'Plan 03',payment:'both'},
+  {min:501000, max:1000000, daily:1.25, weekly:6.25, label:'Plan 04',payment:'both'},
+  {min:1001000,max:Infinity,daily:1.5,  weekly:7.5,  label:'Plan 05',payment:'both'},
+];
+const CAP={3:80,6:70,9:60,12:50};
+const ADMIN_WHATSAPP='+94XXXXXXXXX'; // ← ඔබේ admin WhatsApp number
+const TG_TOKEN='8971460346:AAF5LJZM2cdFwg4q5DAKBqZwgWv3Bt8jwe0'; // ← BotFather ෙකන් revoke කරලා new token දාන්න
+const TG_CHAT_ID='8268217584';
+let selectedPeriod=3;
+
+// ── FIRESTORE SAVE ──
+async function saveReg(data){
+  try{
+    const { collection, addDoc } = window._fbModules;
+    await addDoc(collection(window._db,'registrations'), data);
+    console.log('Saved to Firestore!');
+  }catch(e){
+    console.error('Firestore error:',e);
+    // Fallback to localStorage
+    let all=JSON.parse(localStorage.getItem('ds_regs')||'{}');
+    all[data.ref]=data;
+    localStorage.setItem('ds_regs',JSON.stringify(all));
+  }
+}
+async function getReg(ref){
+  try{
+    const { collection, query, where, getDocs } = window._fbModules;
+    const q = query(collection(window._db,'registrations'), where('ref','==',ref));
+    const snap = await getDocs(q);
+    if(!snap.empty) return snap.docs[0].data();
+    return null;
+  }catch(e){
+    console.error('Firestore error:',e);
+    // Fallback to localStorage
+    let all=JSON.parse(localStorage.getItem('ds_regs')||'{}');
+    return all[ref]||null;
+  }
+}
+
+// ── TELEGRAM NOTIFICATION ──
+async function sendTelegram(msg){
+  try{
+    const url='https://api.telegram.org/bot'+TG_TOKEN+'/sendMessage';
+    await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        chat_id:TG_CHAT_ID,
+        text:msg,
+        parse_mode:'Markdown'
+      })
+    });
+  }catch(e){console.log('Telegram error:',e);}
+}
+
+function fmt(n){return 'Rs. '+Math.round(n).toLocaleString('en-IN');}
+function getTier(a){return TIERS.find(t=>a>=t.min&&a<=t.max)||null;}
+
+function showScreen(id,clickedBtn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.side-tab,.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.side-tab,.nav-tab').forEach(b=>{
+    if(b.getAttribute('onclick')===clickedBtn.getAttribute('onclick')) b.classList.add('active');
+  });
+  if(id==='register') updateRegSummary();
+}
+
+function selectPeriod(m,btn){
+  selectedPeriod=m;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  calculate();
+}
+
+function calculate(){
+  const amount=parseFloat(document.getElementById('investAmount').value);
+  const badge=document.getElementById('tierBadge');
+  if(!amount||amount<5000){
+    badge.className='tier-badge none';
+    badge.textContent=amount>0&&amount<5000?'⚠ Below minimum — Rs. 5,000 required':'⬆ Minimum investment: Rs. 5,000';
+    document.getElementById('emptyState').style.display='';
+    document.getElementById('resultsContent').style.display='none';
+    return;
+  }
+  const tier=getTier(amount);
+  if(!tier){badge.className='tier-badge none';badge.textContent='⚠ Not in any plan range';return;}
+  const ti=TIERS.indexOf(tier);
+  badge.className='tier-badge tier-'+(ti+1);
+  badge.innerHTML='✦ '+tier.label+' — Rs. '+TIERS[ti].min.toLocaleString()+' to '+(TIERS[ti].max===Infinity?'Above':('Rs. '+TIERS[ti].max.toLocaleString()));
+
+  const weekly=amount*(tier.weekly/100);
+  const daily=tier.daily?amount*(tier.daily/100):null;
+  const capPct=CAP[selectedPeriod];
+  const capAmt=amount*(capPct/100);
+  const weeks=selectedPeriod*4.33;
+  const totalW=weekly*Math.round(weeks);
+
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('resultsContent').style.display='';
+
+  if(daily!==null){
+    document.getElementById('dailyProfit').textContent=fmt(daily);
+    document.getElementById('dailyRate').textContent=tier.daily+'% of investment';
+    document.getElementById('dailyBadge').innerHTML='';
+  } else {
+    document.getElementById('dailyProfit').textContent='—';
+    document.getElementById('dailyRate').textContent='Not available';
+    document.getElementById('dailyBadge').innerHTML='<div class="payment-badge pb-weekly">Weekly only</div>';
+  }
+  document.getElementById('weeklyProfit').textContent=fmt(weekly);
+  document.getElementById('weeklyRate').textContent=tier.weekly+'% of investment';
+  document.getElementById('paymentMethod').innerHTML=tier.payment==='both'?'<div class="payment-badge pb-both">📅 Daily & Weekly</div>':'<div class="payment-badge pb-weekly">📅 Weekly Only</div>';
+  document.getElementById('periodTotal').textContent=fmt(totalW);
+  document.getElementById('periodLabel').textContent='~'+Math.round(weeks)+' weeks profit';
+  document.getElementById('capitalReturn').textContent=fmt(capAmt);
+  document.getElementById('capitalPctSub').textContent=capPct+'% of investment';
+  document.getElementById('periodMonths').textContent=selectedPeriod;
+  document.getElementById('capitalPctBig').textContent=capPct+'%';
+  document.getElementById('capitalBar').style.width=capPct+'%';
+  document.getElementById('investedAmt').textContent=fmt(amount);
+  document.getElementById('returnAmt').textContent=fmt(capAmt);
+  let note='<strong>📌 Note:</strong> ';
+  if(tier.payment==='weekly') note+='Below Rs. 50,000 → <strong>weekly profit only</strong>. ';
+  note+='After <strong>'+selectedPeriod+' months</strong>, <strong>'+capPct+'%</strong> capital ('+fmt(capAmt)+') returned. Total profit: <strong>'+fmt(totalW)+'</strong>.';
+  document.getElementById('noteBox').innerHTML=note;
+}
+
+// ── OTHER BANK ──
+function toggleOtherBank(val){
+  const wrap=document.getElementById('otherBankWrap');
+  if(val==='Other'){wrap.classList.add('show');}
+  else{wrap.classList.remove('show');document.getElementById('otherBankName').value='';}
+}
+
+function updateRegSummary(){
+  const amount=parseFloat(document.getElementById('investAmount').value);
+  const tier=amount>=5000?getTier(amount):null;
+  document.getElementById('regAmt').textContent=amount&&tier?fmt(amount):'Not set';
+  document.getElementById('regPeriod').textContent=selectedPeriod+' Months';
+  document.getElementById('regWeekly').textContent=amount&&tier?fmt(amount*(tier.weekly/100))+'/wk':'—';
+}
+
+async function submitRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const nic=document.getElementById('regNIC').value.trim();
+  const phone=document.getElementById('regPhone').value.trim();
+  const whatsapp=document.getElementById('regWhatsApp').value.trim();
+  const bankSel=document.getElementById('regBank').value;
+  const bankOther=document.getElementById('otherBankName').value.trim();
+  const bank=bankSel==='Other'?bankOther:bankSel;
+  const accNo=document.getElementById('regAccNo').value.trim();
+  const accName=document.getElementById('regAccName').value.trim();
+  const errEl=document.getElementById('errorMsg');
+
+  if(!name||!nic||!phone||!bankSel||!accNo||!accName){errEl.textContent='⚠ Please fill all required fields.';errEl.style.display='block';return;}
+  if(bankSel==='Other'&&!bankOther){errEl.textContent='⚠ Please type your bank name.';errEl.style.display='block';return;}
+  if(phone.length<9){errEl.textContent='⚠ Valid phone number required.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.textContent='⏳ Submitting...';
+
+  const amount=parseFloat(document.getElementById('investAmount').value)||0;
+  const tier=amount>=5000?getTier(amount):null;
+  const refNo='DS-'+Date.now().toString(36).toUpperCase();
+  const data={
+    ref:refNo,name,nic,phone,whatsapp:whatsapp||phone,
+    bank,accNo,accName,investAmount:amount,
+    plan:tier?tier.label:'Not selected',
+    planFull:tier?('Plan '+('0'+(TIERS.indexOf(tier)+1)).slice(-2)+' — Rs. '+TIERS[TIERS.indexOf(tier)].min.toLocaleString()+' to '+(TIERS[TIERS.indexOf(tier)].max===Infinity?'Above':('Rs. '+TIERS[TIERS.indexOf(tier)].max.toLocaleString()))):'Not selected',
+    dailyRate:tier?tier.daily:null,
+    weeklyRate:tier?tier.weekly:null,
+    period:selectedPeriod+' months',
+    status:'pending',
+    payments:[],
+    submittedAt:new Date().toLocaleString('en-LK')
+  };
+
+  // TODO: Firebase → db.collection('registrations').add(data)
+  await saveReg(data);
+  console.log('Saved to Firestore!',data);
+
+  // ── TELEGRAM NOTIFICATION TO ADMIN ──
+  const tgMsg =
+    '🔔 *New Registration - Diamond Star*\n\n' +
+    '👤 *Name:* ' + data.name + '\n' +
+    '🪪 *NIC:* ' + data.nic + '\n' +
+    '📱 *Phone:* ' + data.phone + '\n' +
+    '💬 *WhatsApp:* ' + data.whatsapp + '\n\n' +
+    '💰 *Investment:* Rs. ' + (data.investAmount||0).toLocaleString('en-IN') + '\n' +
+    '📋 *Plan:* ' + (data.planFull||data.plan) + '\n' +
+    '📅 *Period:* ' + data.period + '\n\n' +
+    '🏦 *Bank:* ' + data.bank + '\n' +
+    '🔢 *Acc No:* ' + data.accNo + '\n' +
+    '👤 *Acc Name:* ' + data.accName + '\n\n' +
+    '🔖 *Ref:* ' + data.ref + '\n' +
+    '🕐 *Time:* ' + data.submittedAt;
+  sendTelegram(tgMsg);
+
+  // Build WhatsApp message to admin with all details
+  const weekly = tier ? Math.round(data.investAmount*(tier.weekly/100)) : 0;
+  const waMsg =
+    '🔔 *New Registration - Diamond Star*\n\n' +
+    '👤 *Name:* ' + data.name + '\n' +
+    '🪪 *NIC:* ' + data.nic + '\n' +
+    '📱 *Phone:* ' + data.phone + '\n' +
+    '💬 *WhatsApp:* ' + data.whatsapp + '\n\n' +
+    '💰 *Investment:* Rs. ' + (data.investAmount||0).toLocaleString('en-IN') + '\n' +
+    '📋 *Plan:* ' + (data.planFull||data.plan) + '\n' +
+    '📅 *Period:* ' + data.period + '\n' +
+    '📈 *Weekly Profit:* Rs. ' + weekly.toLocaleString('en-IN') + '\n\n' +
+    '🏦 *Bank:* ' + data.bank + '\n' +
+    '🔢 *Acc No:* ' + data.accNo + '\n' +
+    '👤 *Acc Name:* ' + data.accName + '\n\n' +
+    '🔖 *Ref:* ' + data.ref + '\n' +
+    '🕐 *Submitted:* ' + data.submittedAt;
+
+  const adminNum = ADMIN_WHATSAPP.replace(/\D/g,'');
+  document.getElementById('adminWhatsAppBtn').href =
+    'https://wa.me/' + adminNum + '?text=' + encodeURIComponent(waMsg);
+
+  setTimeout(()=>{
+    btn.disabled=false;btn.textContent='✦ Submit Registration';
+    document.getElementById('regFormView').style.display='none';
+    document.getElementById('regSuccessView').style.display='';
+  },1200);
+}
+
+function resetRegForm(){
+  document.getElementById('regFormView').style.display='';
+  document.getElementById('regSuccessView').style.display='none';
+  ['regName','regNIC','regPhone','regWhatsApp','regAccNo','regAccName'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('regBank').value='';
+  document.getElementById('otherBankWrap').classList.remove('show');
+}
+
+// ── USER PANEL LOOKUP ──
+async function lookupUser(){
+  const ref=document.getElementById('refInput').value.trim().toUpperCase();
+  const errEl=document.getElementById('loginError');
+  if(!ref||!ref.startsWith('DS-')){errEl.textContent='⚠ Valid reference number enter කරන්න (DS-XXXXXXXX)';errEl.style.display='block';return;}
+  const data=await getReg(ref);
+  if(!data){errEl.textContent='⚠ Reference number found නැහැ. ඔබේ reference check කරන්න.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+  showUserDash(data);
+}
+
+function showUserDash(data){
+  // Status
+  const sb=document.getElementById('userStatusBadge');
+  if(data.status==='approved'){sb.className='status-badge status-approved';sb.textContent='✅ Approved';}
+  else if(data.status==='rejected'){sb.className='status-badge status-rejected';sb.textContent='❌ Rejected';}
+  else{sb.className='status-badge status-pending';sb.textContent='⏳ Pending';}
+
+  document.getElementById('displayRef').textContent=data.ref;
+
+  // Approved info
+  if(data.status==='approved'&&data.approvedDate){
+    document.getElementById('approvedInfo').style.display='';
+    document.getElementById('approvedDate').textContent=data.approvedDate||'—';
+    document.getElementById('nextPayment').textContent=data.nextPayment||'—';
+  } else {
+    document.getElementById('approvedInfo').style.display='none';
+  }
+
+  // Details
+  document.getElementById('u-name').textContent=data.name;
+  document.getElementById('u-phone').textContent=data.phone;
+  document.getElementById('u-amount').textContent=fmt(data.investAmount||0);
+  document.getElementById('u-plan').textContent=data.planFull||data.plan||'—';
+  document.getElementById('u-period').textContent=data.period||'—';
+  document.getElementById('u-bank').textContent=data.bank||'—';
+  document.getElementById('u-accno').textContent=data.accNo||'—';
+  document.getElementById('u-date').textContent=data.submittedAt||'—';
+
+  // Profit
+  const amt=data.investAmount||0;
+  const tier=amt>=5000?getTier(amt):null;
+  const periodMonths=parseInt(data.period)||3;
+  const capPct=CAP[periodMonths]||80;
+  if(tier){
+    const weekly=amt*(tier.weekly/100);
+    const daily=tier.daily?amt*(tier.daily/100):null;
+    const capAmt=amt*(capPct/100);
+    document.getElementById('u-daily').textContent=daily?fmt(daily):'—';
+    document.getElementById('u-weekly').textContent=fmt(weekly);
+    document.getElementById('u-capital').textContent=fmt(capAmt);
+    document.getElementById('u-profitNote').innerHTML='<strong>'+tier.weekly+'%</strong> weekly profit. After <strong>'+periodMonths+' months</strong>, <strong>'+capPct+'%</strong> capital ('+fmt(capAmt)+') returned.';
+  }
+
+  // Payments
+  const ph=document.getElementById('paymentHistoryList');
+  if(data.payments&&data.payments.length>0){
+    ph.innerHTML=data.payments.map(p=>`
+      <div class="payment-item">
+        <div><div class="pi-date">${p.date}</div><div class="pi-note">${p.note||'Weekly profit'}</div></div>
+        <div class="pi-amount">+${fmt(p.amount)}</div>
+      </div>`).join('');
+  } else {
+    ph.innerHTML='<div class="no-payments">💳 Admin payments enter කළාට පස්සේ payments මෙහෙ පෙනෙනවා</div>';
+  }
+
+  // WhatsApp contact
+  const waMsg=encodeURIComponent('Hi Admin, my reference number is '+data.ref+'. I need help with my investment.');
+  document.getElementById('waContactBtn').href='https://wa.me/'+ADMIN_WHATSAPP.replace(/\D/g,'')+'?text='+waMsg;
+
+  document.getElementById('userLoginView').style.display='none';
+  document.getElementById('userDashView').style.display='';
+}
+
+function logoutUser(){
+  document.getElementById('userLoginView').style.display='';
+  document.getElementById('userDashView').style.display='none';
+  document.getElementById('refInput').value='';
+  document.getElementById('loginError').style.display='none';
+}
+
+calculate();
+</script>
+</body>
+</html>
