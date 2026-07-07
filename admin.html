@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diamond Star - Admin Panel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --gold:#FFD700;--gold-dark:#B8860B;--gold-light:#FFF0A0;
+  --navy:#0A0E2A;--navy-mid:#111840;--navy-light:#1A2260;
+  --teal:#00C8B0;--white:#FFFFFF;--soft:#C8D0E8;--red:#FF4B6E;--green:#00E676;
+  --orange:#FFA500;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--navy);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-box{background:linear-gradient(135deg,rgba(26,34,96,.9),rgba(17,24,64,.95));border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:40px 36px;width:100%;max-width:400px;text-align:center;}
+.login-box::before{content:'';display:block;font-size:48px;margin-bottom:12px;}
+.login-icon{font-size:48px;margin-bottom:12px;display:block;filter:drop-shadow(0 0 12px rgba(255,215,0,.7));}
+.login-title{font-family:'Cinzel',serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--soft);opacity:.6;margin-bottom:28px;letter-spacing:.1em;text-transform:uppercase;}
+.login-input{width:100%;padding:13px 16px;background:rgba(10,14,42,.8);border:1.5px solid rgba(255,215,0,.2);border-radius:10px;color:var(--white);font-size:15px;font-family:'Inter',sans-serif;outline:none;margin-bottom:12px;transition:border-color .2s;}
+.login-input:focus{border-color:var(--gold);}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:var(--navy);font-family:'Cinzel',serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,215,0,.4);}
+.login-err{color:var(--red);font-size:12px;margin-bottom:10px;display:none;}
+
+/* ADMIN SHELL */
+.admin-shell{display:none;min-height:100vh;}
+.admin-header{background:linear-gradient(90deg,rgba(17,24,64,.98),rgba(10,14,42,.98));border-bottom:1px solid rgba(255,215,0,.15);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.admin-brand{display:flex;align-items:center;gap:12px;}
+.admin-brand-icon{font-size:28px;filter:drop-shadow(0 0 8px rgba(255,215,0,.7));}
+.admin-brand-name{font-family:'Cinzel',serif;font-size:16px;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.admin-brand-sub{font-size:10px;color:var(--soft);opacity:.5;letter-spacing:.15em;text-transform:uppercase;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.refresh-btn{padding:8px 16px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.25);border-radius:8px;color:var(--gold);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.refresh-btn:hover{background:rgba(255,215,0,.2);}
+.logout-btn{padding:8px 16px;background:rgba(255,75,110,.1);border:1px solid rgba(255,75,110,.25);border-radius:8px;color:var(--red);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;}
+
+/* TABS */
+.admin-tabs{display:flex;gap:4px;padding:16px 24px 0;background:rgba(10,14,42,.5);border-bottom:1px solid rgba(255,255,255,.06);}
+.admin-tab{padding:10px 20px;border:none;background:transparent;color:var(--soft);opacity:.5;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.admin-tab.active{opacity:1;color:var(--gold);border-bottom-color:var(--gold);}
+.admin-tab:hover{opacity:.8;}
+
+/* CONTENT */
+.admin-content{padding:24px;max-width:1200px;margin:0 auto;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+@media(max-width:700px){.stats-row{grid-template-columns:1fr 1fr;}}
+.stat-card{background:linear-gradient(135deg,rgba(26,34,96,.8),rgba(17,24,64,.9));border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;}
+.stat-card.s-gold{border-color:rgba(255,215,0,.2);}
+.stat-card.s-teal{border-color:rgba(0,200,176,.2);}
+.stat-card.s-green{border-color:rgba(0,230,118,.2);}
+.stat-card.s-red{border-color:rgba(255,75,110,.2);}
+.stat-num{font-size:32px;font-weight:700;margin-bottom:4px;}
+.stat-label{font-size:11px;color:var(--soft);opacity:.6;text-transform:uppercase;letter-spacing:.1em;}
+
+/* SECTION */
+.section-title{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,215,0,.4),transparent);}
+
+/* TABLE */
+.table-wrap{background:linear-gradient(135deg,rgba(26,34,96,.7),rgba(17,24,64,.85));border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.reg-table{width:100%;border-collapse:collapse;font-size:13px;}
+.reg-table th{background:rgba(255,215,0,.08);color:var(--gold);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:12px 14px;text-align:left;border-bottom:1px solid rgba(255,215,0,.12);}
+.reg-table td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--soft);vertical-align:middle;}
+.reg-table tr:last-child td{border-bottom:none;}
+.reg-table tr:hover td{background:rgba(255,215,0,.02);}
+
+/* STATUS BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600;}
+.badge-pending{background:rgba(255,165,0,.15);border:1px solid rgba(255,165,0,.4);color:var(--orange);}
+.badge-approved{background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.4);color:var(--green);}
+.badge-rejected{background:rgba(255,75,110,.12);border:1px solid rgba(255,75,110,.4);color:var(--red);}
+
+/* ACTION BUTTONS */
+.action-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.btn-approve{padding:6px 12px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.4);border-radius:7px;color:var(--green);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.btn-approve:hover{background:rgba(0,230,118,.28);}
+.btn-reject{padding:6px 12px;background:rgba(255,75,110,.12);border:1px solid rgba(255,75,110,.35);border-radius:7px;color:var(--red);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.btn-reject:hover{background:rgba(255,75,110,.25);}
+.btn-wa{padding:6px 12px;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.35);border-radius:7px;color:#25d366;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.btn-wa:hover{background:rgba(37,211,102,.25);}
+.btn-payment{padding:6px 12px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:7px;color:var(--gold);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.btn-payment:hover{background:rgba(255,215,0,.2);}
+.btn-view{padding:6px 12px;background:rgba(0,200,176,.1);border:1px solid rgba(0,200,176,.3);border-radius:7px;color:var(--teal);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,25,.88);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:linear-gradient(135deg,#111840,#0A0E2A);border:1px solid rgba(255,215,0,.2);border-radius:18px;padding:32px;width:100%;max-width:500px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:18px 18px 0 0;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.modal-title{font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:var(--gold);margin-bottom:18px;}
+.close-btn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:50%;width:30px;height:30px;color:var(--soft);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.close-btn:hover{background:rgba(255,75,110,.2);color:var(--red);}
+.modal-field{margin-bottom:14px;}
+.modal-field label{font-size:11px;color:var(--soft);opacity:.65;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:5px;}
+.modal-field input,.modal-field select{width:100%;padding:11px 14px;background:rgba(10,14,42,.9);border:1.5px solid rgba(255,215,0,.2);border-radius:9px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--gold);}
+.modal-detail{background:rgba(10,14,42,.6);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;margin-bottom:16px;}
+.modal-detail .d-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.modal-detail .d-row:last-child{border-bottom:none;}
+.modal-detail .d-label{color:var(--soft);opacity:.6;font-size:12px;}
+.modal-detail .d-val{color:var(--white);font-weight:500;}
+.modal-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:9px;color:var(--navy);font-family:'Cinzel',serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;transition:all .2s;}
+.modal-btn:hover{transform:translateY(-1px);}
+.modal-btn.danger{background:linear-gradient(135deg,#c0392b,var(--red));}
+.modal-btn.success{background:linear-gradient(135deg,#00a854,var(--green));}
+.modal-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+
+/* PAYMENT LIST */
+.payment-item{display:flex;justify-content:space-between;align-items:center;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15);border-radius:9px;padding:10px 14px;margin-bottom:8px;}
+.payment-item .pi-left .pi-date{font-size:11px;color:var(--soft);opacity:.6;}
+.payment-item .pi-left .pi-note{font-size:13px;font-weight:500;}
+.payment-item .pi-amount{font-size:16px;font-weight:700;color:var(--green);}
+.del-payment{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;opacity:.5;transition:opacity .2s;}
+.del-payment:hover{opacity:1;}
+
+/* SEARCH & FILTER */
+.filter-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:200px;padding:10px 14px;background:rgba(10,14,42,.7);border:1.5px solid rgba(255,215,0,.15);border-radius:9px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;}
+.search-input:focus{border-color:var(--gold);}
+.filter-select{padding:10px 14px;background:rgba(10,14,42,.7);border:1.5px solid rgba(255,215,0,.15);border-radius:9px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;}
+.filter-select option{background:#111840;}
+
+/* EMPTY */
+.empty-row td{text-align:center;padding:40px;color:var(--soft);opacity:.4;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:200;transform:translateY(100px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:rgba(0,230,118,.2);border:1px solid rgba(0,230,118,.5);color:var(--green);}
+.toast.error{background:rgba(255,75,110,.2);border:1px solid rgba(255,75,110,.5);color:var(--red);}
+
+.screen{display:none;}.screen.active{display:block;}
+@media(max-width:600px){
+  .reg-table th:nth-child(3),.reg-table td:nth-child(3),
+  .reg-table th:nth-child(4),.reg-table td:nth-child(4){display:none;}
+  .admin-content{padding:14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, updateDoc, arrayUnion, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4vBlSWM1MuOx2h8NpICzoRXqnGaPYdVM",
+    authDomain: "diamond-star-92816.firebaseapp.com",
+    projectId: "diamond-star-92816",
+    storageBucket: "diamond-star-92816.firebasestorage.app",
+    messagingSenderId: "3019462367",
+    appId: "1:3019462367:web:c381ad57f724987f3efb6a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window._db = db;
+  window._fb = { collection, getDocs, doc, updateDoc, arrayUnion, query, orderBy };
+  window._fbReady = true;
+  console.log('Firebase Admin ready!');
+</script>
+
+<!-- LOGIN -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-box">
+    <span class="login-icon">🛡️</span>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Diamond Star Investment</div>
+    <div class="login-err" id="loginErr">⚠ Incorrect password</div>
+    <input type="password" class="login-input" id="adminPass" placeholder="Admin Password" onkeydown="if(event.key==='Enter')adminLogin()">
+    <button class="login-btn" onclick="adminLogin()">🔓 Login</button>
+  </div>
+</div>
+
+<!-- ADMIN SHELL -->
+<div id="adminShell" class="admin-shell">
+
+  <!-- HEADER -->
+  <div class="admin-header">
+    <div class="admin-brand">
+      <span class="admin-brand-icon">💎</span>
+      <div>
+        <div class="admin-brand-name">DIAMOND STAR</div>
+        <div class="admin-brand-sub">Admin Panel</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+      <button class="logout-btn" onclick="adminLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="showTab('pending',this)">⏳ Pending</button>
+    <button class="admin-tab" onclick="showTab('all',this)">📋 All Investors</button>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card s-gold"><div class="stat-num" style="color:var(--gold)" id="statTotal">0</div><div class="stat-label">Total Investors</div></div>
+      <div class="stat-card s-teal"><div class="stat-num" style="color:var(--orange)" id="statPending">0</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card s-green"><div class="stat-num" style="color:var(--green)" id="statApproved">0</div><div class="stat-label">Approved</div></div>
+      <div class="stat-card s-red"><div class="stat-num" style="color:var(--red)" id="statRejected">0</div><div class="stat-label">Rejected</div></div>
+    </div>
+
+    <!-- PENDING TAB -->
+    <div class="screen active" id="tab-pending">
+      <div class="section-title">Pending Registrations</div>
+      <div class="table-wrap">
+        <table class="reg-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Amount</th>
+              <th>Plan</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pendingTable"><tr class="empty-row"><td colspan="6">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ALL INVESTORS TAB -->
+    <div class="screen" id="tab-all">
+      <div class="filter-row">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, phone, NIC..." oninput="renderAll()">
+        <select class="filter-select" id="statusFilter" onchange="renderAll()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="section-title">All Investors</div>
+      <div class="table-wrap">
+        <table class="reg-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Amount</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="allTable"><tr class="empty-row"><td colspan="6">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('viewModal')">✕</button>
+    <div class="modal-title">👤 Customer Details</div>
+    <div class="modal-detail" id="viewDetails"></div>
+    <div class="modal-btn-row" id="viewActions"></div>
+  </div>
+</div>
+
+<!-- APPROVE MODAL -->
+<div class="modal-overlay" id="approveModal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('approveModal')">✕</button>
+    <div class="modal-title">✅ Approve Registration</div>
+    <div class="modal-detail" id="approveDetails"></div>
+    <div class="modal-field">
+      <label>Approved Date</label>
+      <input type="date" id="approvedDate">
+    </div>
+    <div class="modal-field">
+      <label>Next Payment Date</label>
+      <input type="date" id="nextPayDate">
+    </div>
+    <button class="modal-btn success" onclick="confirmApprove()">✅ Approve & Send WhatsApp</button>
+  </div>
+</div>
+
+<!-- REJECT MODAL -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('rejectModal')">✕</button>
+    <div class="modal-title">❌ Reject Registration</div>
+    <div class="modal-detail" id="rejectDetails"></div>
+    <div class="modal-field">
+      <label>Reason (Optional)</label>
+      <input type="text" id="rejectReason" placeholder="Reason for rejection...">
+    </div>
+    <button class="modal-btn danger" onclick="confirmReject()">❌ Reject & Notify</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('paymentModal')">✕</button>
+    <div class="modal-title">💳 Add Payment</div>
+    <div style="font-size:13px;color:var(--soft);margin-bottom:16px;" id="paymentCustomerName"></div>
+    <div class="modal-field">
+      <label>Payment Date</label>
+      <input type="date" id="paymentDate">
+    </div>
+    <div class="modal-field">
+      <label>Amount (Rs.)</label>
+      <input type="number" id="paymentAmount" placeholder="e.g. 1875">
+    </div>
+    <div class="modal-field">
+      <label>Note</label>
+      <input type="text" id="paymentNote" placeholder="Weekly profit / Capital return...">
+    </div>
+    <div id="existingPayments" style="margin-bottom:16px;"></div>
+    <button class="modal-btn" onclick="confirmPayment()">💳 Add Payment</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_PASSWORD = 'admin123'; // ← ඔබේ password දෙන්න
+const ADMIN_WHATSAPP = '+94XXXXXXXXX'; // ← ඔබේ WhatsApp number
+
+let allData = [];
+let currentDoc = null;
+
+// ── LOGIN ──
+function adminLogin(){
+  const pass = document.getElementById('adminPass').value;
+  if(pass === ADMIN_PASSWORD){
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('adminShell').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+function adminLogout(){
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('adminShell').style.display = 'none';
+  document.getElementById('adminPass').value = '';
+}
+
+// ── TABS ──
+function showTab(id, btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── LOAD DATA ──
+async function loadData(){
+  if(!window._fb) { setTimeout(loadData, 500); return; }
+  const { collection, getDocs } = window._fb;
+  try{
+    const snap = await getDocs(collection(window._db,'registrations'));
+    allData = snap.docs.map(d=>({id:d.id,...d.data()}));
+    allData.sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
+    updateStats();
+    renderPending();
+    renderAll();
+  }catch(e){ showToast('Error loading data: '+e.message,'error'); }
+}
+
+function updateStats(){
+  const pending = allData.filter(d=>d.status==='pending').length;
+  const approved = allData.filter(d=>d.status==='approved').length;
+  const rejected = allData.filter(d=>d.status==='rejected').length;
+  document.getElementById('statTotal').textContent = allData.length;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statApproved').textContent = approved;
+  document.getElementById('statRejected').textContent = rejected;
+}
+
+function fmt(n){ return 'Rs. '+Math.round(n||0).toLocaleString('en-IN'); }
+
+// ── RENDER PENDING ──
+function renderPending(){
+  const pending = allData.filter(d=>d.status==='pending');
+  const tbody = document.getElementById('pendingTable');
+  if(!pending.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="6">✅ No pending registrations</td></tr>';
+    return;
+  }
+  tbody.innerHTML = pending.map(d=>`
+    <tr>
+      <td><strong style="color:var(--white)">${d.name}</strong><br><span style="font-size:11px;opacity:.5">${d.ref}</span></td>
+      <td>${d.phone}</td>
+      <td style="color:var(--gold);font-weight:700">${fmt(d.investAmount)}</td>
+      <td>${d.plan||'—'}</td>
+      <td style="font-size:11px;opacity:.6">${d.submittedAt||'—'}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-approve" onclick="openApprove('${d.id}')">✅ Approve</button>
+          <button class="btn-reject" onclick="openReject('${d.id}')">❌ Reject</button>
+          <button class="btn-view" onclick="openView('${d.id}')">👁 View</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ── RENDER ALL ──
+function renderAll(){
+  const search = (document.getElementById('searchInput').value||'').toLowerCase();
+  const statusF = document.getElementById('statusFilter').value;
+  let data = allData;
+  if(statusF) data = data.filter(d=>d.status===statusF);
+  if(search) data = data.filter(d=>
+    (d.name||'').toLowerCase().includes(search)||
+    (d.phone||'').includes(search)||
+    (d.nic||'').toLowerCase().includes(search)||
+    (d.ref||'').toLowerCase().includes(search)
+  );
+  const tbody = document.getElementById('allTable');
+  if(!data.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="6">No records found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(d=>{
+    const statusBadge = d.status==='approved'
+      ?'<span class="badge badge-approved">✅ Approved</span>'
+      :d.status==='rejected'
+      ?'<span class="badge badge-rejected">❌ Rejected</span>'
+      :'<span class="badge badge-pending">⏳ Pending</span>';
+    return `<tr>
+      <td><strong style="color:var(--white)">${d.name}</strong><br><span style="font-size:11px;opacity:.5">${d.ref}</span></td>
+      <td>${d.phone}</td>
+      <td style="color:var(--gold);font-weight:700">${fmt(d.investAmount)}</td>
+      <td style="font-size:12px">${d.plan||'—'}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-view" onclick="openView('${d.id}')">👁 View</button>
+          ${d.status==='approved'?`<button class="btn-payment" onclick="openPayment('${d.id}')">💳 Payment</button>`:''}
+          ${d.status==='pending'?`<button class="btn-approve" onclick="openApprove('${d.id}')">✅</button><button class="btn-reject" onclick="openReject('${d.id}')">❌</button>`:''}
+        </div>
+      </td>
+    </tr>`;}).join('');
+}
+
+// ── VIEW MODAL ──
+function openView(docId){
+  const d = allData.find(x=>x.id===docId);
+  if(!d) return;
+  currentDoc = d;
+  const statusBadge = d.status==='approved'
+    ?'<span class="badge badge-approved">✅ Approved</span>'
+    :d.status==='rejected'
+    ?'<span class="badge badge-rejected">❌ Rejected</span>'
+    :'<span class="badge badge-pending">⏳ Pending</span>';
+  document.getElementById('viewDetails').innerHTML=`
+    <div class="d-row"><span class="d-label">Status</span><span>${statusBadge}</span></div>
+    <div class="d-row"><span class="d-label">Ref</span><span class="d-val" style="color:var(--gold)">${d.ref}</span></div>
+    <div class="d-row"><span class="d-label">Name</span><span class="d-val">${d.name}</span></div>
+    <div class="d-row"><span class="d-label">NIC</span><span class="d-val">${d.nic}</span></div>
+    <div class="d-row"><span class="d-label">Phone</span><span class="d-val">${d.phone}</span></div>
+    <div class="d-row"><span class="d-label">WhatsApp</span><span class="d-val">${d.whatsapp||d.phone}</span></div>
+    <div class="d-row"><span class="d-label">Investment</span><span class="d-val" style="color:var(--gold)">${fmt(d.investAmount)}</span></div>
+    <div class="d-row"><span class="d-label">Plan</span><span class="d-val">${d.planFull||d.plan||'—'}</span></div>
+    <div class="d-row"><span class="d-label">Period</span><span class="d-val">${d.period||'—'}</span></div>
+    <div class="d-row"><span class="d-label">Bank</span><span class="d-val">${d.bank||'—'}</span></div>
+    <div class="d-row"><span class="d-label">Acc No</span><span class="d-val">${d.accNo||'—'}</span></div>
+    <div class="d-row"><span class="d-label">Acc Name</span><span class="d-val">${d.accName||'—'}</span></div>
+    <div class="d-row"><span class="d-label">Registered</span><span class="d-val" style="font-size:12px">${d.submittedAt||'—'}</span></div>
+    ${d.payments&&d.payments.length?`<div class="d-row"><span class="d-label">Payments</span><span class="d-val" style="color:var(--green)">${d.payments.length} payments</span></div>`:''}
+  `;
+  const acts = document.getElementById('viewActions');
+  const wa = (d.whatsapp||d.phone).replace(/\D/g,'');
+  acts.innerHTML=`<a class="btn-wa modal-btn" href="https://wa.me/94${wa.slice(-9)}" target="_blank" style="justify-content:center;padding:12px;">📱 WhatsApp</a>`;
+  if(d.status==='approved'){
+    acts.innerHTML+=`<button class="modal-btn" onclick="closeModal('viewModal');openPayment('${d.id}')" style="margin-top:0;">💳 Add Payment</button>`;
+  }
+  document.getElementById('viewModal').classList.add('open');
+}
+
+// ── APPROVE MODAL ──
+function openApprove(docId){
+  const d = allData.find(x=>x.id===docId);
+  if(!d) return;
+  currentDoc = d;
+  document.getElementById('approveDetails').innerHTML=`
+    <div class="d-row"><span class="d-label">Name</span><span class="d-val">${d.name}</span></div>
+    <div class="d-row"><span class="d-label">Investment</span><span class="d-val" style="color:var(--gold)">${fmt(d.investAmount)}</span></div>
+    <div class="d-row"><span class="d-label">Plan</span><span class="d-val">${d.plan||'—'}</span></div>
+    <div class="d-row"><span class="d-label">Ref</span><span class="d-val" style="color:var(--gold)">${d.ref}</span></div>
+  `;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('approvedDate').value = today;
+  const nextWeek = new Date(); nextWeek.setDate(nextWeek.getDate()+7);
+  document.getElementById('nextPayDate').value = nextWeek.toISOString().split('T')[0];
+  closeModal('viewModal');
+  document.getElementById('approveModal').classList.add('open');
+}
+
+async function confirmApprove(){
+  if(!currentDoc) return;
+  const approvedDate = document.getElementById('approvedDate').value;
+  const nextPayment = document.getElementById('nextPayDate').value;
+  const { doc, updateDoc } = window._fb;
+  try{
+    await updateDoc(doc(window._db,'registrations',currentDoc.id),{
+      status:'approved', approvedDate, nextPayment
+    });
+    // WhatsApp message to customer
+    const wa = (currentDoc.whatsapp||currentDoc.phone).replace(/\D/g,'');
+    const weekly = currentDoc.investAmount * ((currentDoc.weeklyRate||2.5)/100);
+    const msg = encodeURIComponent(
+      '✅ *Diamond Star Investment - Approved!*\n\n' +
+      'ආයුබෝවන් *'+currentDoc.name+'* !\n\n' +
+      'ඔබේ investment approve කරා! 🎉\n\n' +
+      '🔖 *Reference Number: '+currentDoc.ref+'*\n' +
+      '💰 Investment: '+fmt(currentDoc.investAmount)+'\n' +
+      '📈 Weekly Profit: '+fmt(weekly)+'\n' +
+      '📅 Period: '+currentDoc.period+'\n' +
+      '📆 Next Payment: '+nextPayment+'\n\n' +
+      'My Panel ෙකදී ඔබේ details බලන්න: [website link]\n' +
+      'Reference Number eka save කරගන්න! 🌟'
+    );
+    window.open('https://wa.me/94'+wa.slice(-9)+'?text='+msg,'_blank');
+    showToast('✅ Approved! WhatsApp opened.','success');
+    closeModal('approveModal');
+    await loadData();
+  }catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+// ── REJECT MODAL ──
+function openReject(docId){
+  const d = allData.find(x=>x.id===docId);
+  if(!d) return;
+  currentDoc = d;
+  document.getElementById('rejectDetails').innerHTML=`
+    <div class="d-row"><span class="d-label">Name</span><span class="d-val">${d.name}</span></div>
+    <div class="d-row"><span class="d-label">Investment</span><span class="d-val">${fmt(d.investAmount)}</span></div>
+    <div class="d-row"><span class="d-label">Ref</span><span class="d-val">${d.ref}</span></div>
+  `;
+  document.getElementById('rejectReason').value='';
+  closeModal('viewModal');
+  document.getElementById('rejectModal').classList.add('open');
+}
+
+async function confirmReject(){
+  if(!currentDoc) return;
+  const reason = document.getElementById('rejectReason').value.trim();
+  const { doc, updateDoc } = window._fb;
+  try{
+    await updateDoc(doc(window._db,'registrations',currentDoc.id),{
+      status:'rejected', rejectedReason: reason||'Not specified'
+    });
+    const wa = (currentDoc.whatsapp||currentDoc.phone).replace(/\D/g,'');
+    const msg = encodeURIComponent(
+      '❌ *Diamond Star Investment*\n\n' +
+      'ආයුබෝවන් *'+currentDoc.name+'* !\n\n' +
+      'ඔබේ registration reject කරා.\n' +
+      (reason?'Reason: '+reason+'\n':'')+'\n' +
+      'වැඩිදුර විස්තර සඳහා admin ව contact කරන්න. 📞\n'+
+      'WhatsApp: '+ADMIN_WHATSAPP
+    );
+    window.open('https://wa.me/94'+wa.replace(/\D/g,'').slice(-9)+'?text='+msg,'_blank');
+    showToast('❌ Rejected! WhatsApp opened.','error');
+    closeModal('rejectModal');
+    await loadData();
+  }catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+// ── PAYMENT MODAL ──
+function openPayment(docId){
+  const d = allData.find(x=>x.id===docId);
+  if(!d) return;
+  currentDoc = d;
+  document.getElementById('paymentCustomerName').innerHTML =
+    '<strong style="color:var(--white)">'+d.name+'</strong> — '+fmt(d.investAmount)+' — '+d.plan;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('paymentDate').value = today;
+  const weekly = Math.round(d.investAmount*((d.weeklyRate||2.5)/100));
+  document.getElementById('paymentAmount').value = weekly;
+  document.getElementById('paymentNote').value = 'Weekly profit';
+  // Show existing payments
+  const ep = document.getElementById('existingPayments');
+  if(d.payments && d.payments.length){
+    ep.innerHTML='<div style="font-size:11px;color:var(--soft);opacity:.6;margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em;">Previous Payments</div>'+
+      d.payments.map((p,i)=>`
+        <div class="payment-item">
+          <div class="pi-left">
+            <div class="pi-date">${p.date}</div>
+            <div class="pi-note">${p.note||'Payment'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="pi-amount">+${fmt(p.amount)}</span>
+          </div>
+        </div>`).join('');
+  } else {
+    ep.innerHTML='';
+  }
+  closeModal('viewModal');
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+async function confirmPayment(){
+  if(!currentDoc) return;
+  const date = document.getElementById('paymentDate').value;
+  const amount = parseFloat(document.getElementById('paymentAmount').value);
+  const note = document.getElementById('paymentNote').value.trim();
+  if(!date||!amount){ showToast('Date and amount required!','error'); return; }
+  const { doc, updateDoc, arrayUnion } = window._fb;
+  try{
+    const payment = { date, amount, note: note||'Payment', addedAt: new Date().toLocaleString('en-LK') };
+    await updateDoc(doc(window._db,'registrations',currentDoc.id),{
+      payments: arrayUnion(payment)
+    });
+    showToast('💳 Payment added!','success');
+    closeModal('paymentModal');
+    await loadData();
+  }catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// Close modal on outside click
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// Enter key login
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && document.getElementById('loginWrap').style.display!=='none')
+    adminLogin();
+});
+</script>
+</body>
+</html>
