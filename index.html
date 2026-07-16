@@ -149,6 +149,9 @@ hr.divider{border:none;height:1px;background:linear-gradient(90deg,transparent,r
 .ci-icon{font-size:22px;flex-shrink:0;}
 .ci-label{font-size:10px;color:var(--soft);opacity:.6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;}
 .ci-value{font-size:15px;font-weight:600;}
+.plan-tab-btn{padding:8px 16px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;transition:all .2s;opacity:.5;}
+.plan-tab-btn.active{opacity:1;}
+.plan-tab-btn:hover{opacity:.85;}
 
 /* ════ USER PANEL STYLES ════ */
 .user-login-box{max-width:420px;margin:0 auto;}
@@ -253,15 +256,26 @@ hr.divider{border:none;height:1px;background:linear-gradient(90deg,transparent,r
               <input type="number" id="investAmount" placeholder="5,000" min="5000" step="1000" oninput="calculate()">
             </div>
           </div>
-          <div id="tierBadge" class="tier-badge none">⬆ Minimum investment: Rs. 5,000</div>
+          <div id="tierBadge" class="tier-badge none">⬆ Minimum investment: Rs. 5,000 | Plans: 20% / 25% / 30% / 35%</div>
         </div>
         <div class="section-title">Capital Return Period</div>
         <div class="card">
-          <div class="period-grid">
-            <button class="period-btn active" onclick="selectPeriod(3,this)"><span class="months">3</span><span class="lbl">Months</span><span class="rpct" style="color:var(--green)">80% Back</span></button>
-            <button class="period-btn" onclick="selectPeriod(6,this)"><span class="months">6</span><span class="lbl">Months</span><span class="rpct" style="color:var(--teal)">70% Back</span></button>
-            <button class="period-btn" onclick="selectPeriod(9,this)"><span class="months">9</span><span class="lbl">Months</span><span class="rpct" style="color:#C8A0FF">60% Back</span></button>
-            <button class="period-btn" onclick="selectPeriod(12,this)"><span class="months">12</span><span class="lbl">Months</span><span class="rpct" style="color:#FFA500">50% Back</span></button>
+          <div class="period-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <button class="period-btn active" onclick="selectPeriod(1,this)">
+              <span class="months">1</span>
+              <span class="lbl">Month</span>
+              <span class="rpct" style="color:var(--gold)">90% Back</span>
+            </button>
+            <button class="period-btn" onclick="selectPeriod(3,this)">
+              <span class="months">3</span>
+              <span class="lbl">Months</span>
+              <span class="rpct" style="color:var(--green)">80% Back</span>
+            </button>
+            <button class="period-btn" onclick="selectPeriod(6,this)">
+              <span class="months">6</span>
+              <span class="lbl">Months</span>
+              <span class="rpct" style="color:var(--teal)">60% Back</span>
+            </button>
           </div>
         </div>
         <div class="section-title">Profit Breakdown</div>
@@ -270,14 +284,35 @@ hr.divider{border:none;height:1px;background:linear-gradient(90deg,transparent,r
           <div id="resultsContent" style="display:none">
             <div class="results-grid">
               <div class="result-card"><div class="result-label">Daily Profit</div><div class="result-value rv-gold" id="dailyProfit">—</div><div class="result-sub" id="dailyRate"></div><div id="dailyBadge"></div></div>
-              <div class="result-card hl"><div class="result-label">Weekly Profit</div><div class="result-value rv-teal" id="weeklyProfit">—</div><div class="result-sub" id="weeklyRate"></div><div id="paymentMethod"></div></div>
-              <div class="result-card"><div class="result-label">Total Profit (Period)</div><div class="result-value rv-green" id="periodTotal">—</div><div class="result-sub" id="periodLabel"></div></div>
-              <div class="result-card"><div class="result-label">Capital Returned</div><div class="result-value rv-purple" id="capitalReturn">—</div><div class="result-sub" id="capitalPctSub"></div></div>
+              <div class="result-card hl"><div class="result-label">Weekly Profit</div><div class="result-value rv-teal" id="weeklyProfit">—</div><div class="result-sub" id="weeklyRate"></div></div>
+              <div class="result-card"><div class="result-label">Monthly Profit</div><div class="result-value rv-gold" id="monthlyProfit">—</div><div class="result-sub" id="monthlyRate"></div></div>
+              <div class="result-card"><div class="result-label">Total Profit</div><div class="result-value rv-green" id="periodTotal">—</div><div class="result-sub" id="periodLabel"></div></div>
             </div>
             <hr class="divider">
-            <div class="capital-info"><span>Capital back after <strong id="periodMonths" style="color:var(--white)">3</strong> months</span><span class="capital-pct" id="capitalPctBig">80%</span></div>
-            <div class="capital-bar"><div class="capital-fill" id="capitalBar" style="width:80%"></div></div>
-            <div class="capital-info" style="font-size:11px;opacity:.6;margin-top:4px;"><span>Invested: <strong id="investedAmt" style="color:var(--white)">—</strong></span><span>Returned: <strong id="returnAmt" style="color:var(--gold)">—</strong></span></div>
+            <!-- Capital Return Big Display -->
+            <div style="background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.18);border-radius:14px;padding:18px;margin-top:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div>
+                  <div style="font-size:11px;color:var(--soft);opacity:.6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Capital Return After <span id="periodMonths" style="color:var(--gold);font-weight:700;">1</span> Month(s)</div>
+                  <div style="font-size:13px;color:var(--soft);">ඔබේ ආයෝජනයෙන් ලැබෙන capital</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:42px;font-weight:900;color:var(--gold);line-height:1;" id="capitalPctBig">90%</div>
+                  <div style="font-size:11px;color:var(--soft);opacity:.6;">of investment</div>
+                </div>
+              </div>
+              <div class="capital-bar" style="height:12px;margin-bottom:12px;"><div class="capital-fill" id="capitalBar" style="width:90%"></div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="background:rgba(10,14,42,.6);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;text-align:center;">
+                  <div style="font-size:11px;color:var(--soft);opacity:.55;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">ඔබ දුන් මුදල</div>
+                  <div style="font-size:20px;font-weight:700;color:var(--white);" id="investedAmt">—</div>
+                </div>
+                <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:10px;padding:12px;text-align:center;">
+                  <div style="font-size:11px;color:var(--soft);opacity:.55;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">ලැබෙන capital</div>
+                  <div style="font-size:20px;font-weight:700;color:var(--gold);" id="returnAmt">—</div>
+                </div>
+              </div>
+            </div>
             <div class="note" id="noteBox"></div>
           </div>
         </div>
@@ -285,28 +320,132 @@ hr.divider{border:none;height:1px;background:linear-gradient(90deg,transparent,r
 
       <!-- ══ SCREEN 2: PLANS ══ -->
       <div class="screen" id="screen-plans">
-        <div class="section-title">Investment Plans</div>
-        <div class="card" style="padding:0;overflow:hidden;">
-          <table class="plans-table">
-            <thead><tr><th>#</th><th>Investment Range (Rs.)</th><th>Daily %</th><th>Weekly %</th><th>Payment</th></tr></thead>
-            <tbody>
-              <tr><td><span class="plan-num">1</span></td><td>5,000 – 50,000</td><td style="opacity:.4">—</td><td><span class="rate-val rate-teal">2.5%</span></td><td><span style="font-size:11px;color:#C8A0FF">Weekly Only</span></td></tr>
-              <tr><td><span class="plan-num">2</span></td><td>51,000 – 100,000</td><td><span class="rate-val rate-green">0.75%</span></td><td><span class="rate-val rate-teal">3.75%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
-              <tr><td><span class="plan-num">3</span></td><td>101,000 – 500,000</td><td><span class="rate-val rate-green">1.00%</span></td><td><span class="rate-val rate-teal">5.00%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
-              <tr><td><span class="plan-num">4</span></td><td>501,000 – 1,000,000</td><td><span class="rate-val rate-green">1.25%</span></td><td><span class="rate-val rate-teal">6.25%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
-              <tr><td><span class="plan-num">5</span></td><td>1,001,000 & Above</td><td><span class="rate-val rate-green">1.50%</span></td><td><span class="rate-val rate-teal">7.50%</span></td><td><span style="font-size:11px;color:var(--teal)">Daily & Weekly</span></td></tr>
-            </tbody>
-          </table>
+
+        <!-- PLAN SELECTOR TABS -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;">
+          <button onclick="showPlanTab(0,this)" class="plan-tab-btn active" style="background:rgba(46,125,50,.2);border:1px solid rgba(46,125,50,.5);color:#4CAF50;">🟢 20% Plan</button>
+          <button onclick="showPlanTab(1,this)" class="plan-tab-btn" style="background:rgba(21,101,192,.2);border:1px solid rgba(21,101,192,.5);color:#42A5F5;">🔵 25% Plan</button>
+          <button onclick="showPlanTab(2,this)" class="plan-tab-btn" style="background:rgba(106,27,154,.2);border:1px solid rgba(106,27,154,.5);color:#CE93D8;">🟣 30% Plan</button>
+          <button onclick="showPlanTab(3,this)" class="plan-tab-btn" style="background:rgba(230,81,0,.2);border:1px solid rgba(230,81,0,.5);color:#FFA726;">🟡 35% Plan</button>
         </div>
-        <div class="section-title">Capital Return Plan</div>
-        <div class="card">
-          <div class="cap-grid">
-            <div class="cap-card"><div class="cap-months">3 Months</div><div class="cap-pct" style="color:var(--green)">80%</div><div class="cap-sub">capital returned</div></div>
-            <div class="cap-card"><div class="cap-months">6 Months</div><div class="cap-pct" style="color:var(--teal)">70%</div><div class="cap-sub">capital returned</div></div>
-            <div class="cap-card"><div class="cap-months">9 Months</div><div class="cap-pct" style="color:#C8A0FF">60%</div><div class="cap-sub">capital returned</div></div>
-            <div class="cap-card"><div class="cap-months">12 Months</div><div class="cap-pct" style="color:#FFA500">50%</div><div class="cap-sub">capital returned</div></div>
+
+        <!-- PLAN 1: 20% -->
+        <div class="plan-content" id="planTab0">
+          <div class="card" style="border-color:rgba(46,125,50,.4);padding:0;overflow:hidden;">
+            <div style="background:rgba(46,125,50,.2);padding:14px 16px;border-bottom:1px solid rgba(46,125,50,.3);">
+              <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#4CAF50;">Monthly 20% Plan</div>
+              <div style="font-size:12px;color:var(--soft);opacity:.7;margin-top:2px;">Rs. 5,000 – 100,000 | Daily 1% | Weekly 5% | Monthly 20%</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="plans-table">
+                <thead><tr><th>Amount (Rs.)</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>3 Months</th><th>6 Months</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#4CAF50;font-weight:700;">5,000</td><td>50</td><td>250</td><td>1,000</td><td>3,000</td><td>6,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">10,000</td><td>100</td><td>500</td><td>2,000</td><td>6,000</td><td>12,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">20,000</td><td>200</td><td>1,000</td><td>4,000</td><td>12,000</td><td>24,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">25,000</td><td>250</td><td>1,250</td><td>5,000</td><td>15,000</td><td>30,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">30,000</td><td>300</td><td>1,500</td><td>6,000</td><td>18,000</td><td>36,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">50,000</td><td>500</td><td>2,500</td><td>10,000</td><td>30,000</td><td>60,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">60,000</td><td>600</td><td>3,000</td><td>12,000</td><td>36,000</td><td>72,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">75,000</td><td>750</td><td>3,750</td><td>15,000</td><td>45,000</td><td>90,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">80,000</td><td>800</td><td>4,000</td><td>16,000</td><td>48,000</td><td>96,000</td></tr>
+                  <tr><td style="color:#4CAF50;font-weight:700;">100,000</td><td>1,000</td><td>5,000</td><td>20,000</td><td>60,000</td><td>120,000</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div class="note" style="margin-top:16px;"><strong>📌 Note:</strong> Minimum investment Rs. 5,000. Investments below Rs. 50,000 receive <strong>weekly profit only</strong>.</div>
+        </div>
+
+        <!-- PLAN 2: 25% -->
+        <div class="plan-content" id="planTab1" style="display:none;">
+          <div class="card" style="border-color:rgba(21,101,192,.4);padding:0;overflow:hidden;">
+            <div style="background:rgba(21,101,192,.2);padding:14px 16px;border-bottom:1px solid rgba(21,101,192,.3);">
+              <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#42A5F5;">25% Plan</div>
+              <div style="font-size:12px;color:var(--soft);opacity:.7;margin-top:2px;">Rs. 100,000 – 500,000 | Daily 1.25% | Weekly 6.25% | Monthly 25%</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="plans-table">
+                <thead><tr><th>Amount (Rs.)</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>3 Months</th><th>6 Months</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#42A5F5;font-weight:700;">100,000</td><td>1,250</td><td>6,250</td><td>25,000</td><td>75,000</td><td>150,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">150,000</td><td>1,875</td><td>9,375</td><td>37,500</td><td>112,500</td><td>225,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">200,000</td><td>2,500</td><td>12,500</td><td>50,000</td><td>150,000</td><td>300,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">250,000</td><td>3,125</td><td>15,625</td><td>62,500</td><td>187,500</td><td>375,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">275,000</td><td>3,438</td><td>17,188</td><td>68,750</td><td>206,250</td><td>412,500</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">300,000</td><td>3,750</td><td>18,750</td><td>75,000</td><td>225,000</td><td>450,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">350,000</td><td>4,375</td><td>21,875</td><td>87,500</td><td>262,500</td><td>525,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">400,000</td><td>5,000</td><td>25,000</td><td>100,000</td><td>300,000</td><td>600,000</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">425,000</td><td>5,313</td><td>26,563</td><td>106,250</td><td>318,750</td><td>637,500</td></tr>
+                  <tr><td style="color:#42A5F5;font-weight:700;">500,000</td><td>6,250</td><td>31,250</td><td>125,000</td><td>375,000</td><td>750,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLAN 3: 30% -->
+        <div class="plan-content" id="planTab2" style="display:none;">
+          <div class="card" style="border-color:rgba(106,27,154,.4);padding:0;overflow:hidden;">
+            <div style="background:rgba(106,27,154,.2);padding:14px 16px;border-bottom:1px solid rgba(106,27,154,.3);">
+              <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#CE93D8;">30% Plan</div>
+              <div style="font-size:12px;color:var(--soft);opacity:.7;margin-top:2px;">Rs. 500,000 – 1,000,000 | Daily 1.5% | Weekly 7.5% | Monthly 30%</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="plans-table">
+                <thead><tr><th>Amount (Rs.)</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>3 Months</th><th>6 Months</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#CE93D8;font-weight:700;">500,000</td><td>7,500</td><td>37,500</td><td>150,000</td><td>450,000</td><td>900,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">550,000</td><td>8,250</td><td>41,250</td><td>165,000</td><td>495,000</td><td>990,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">600,000</td><td>9,000</td><td>45,000</td><td>180,000</td><td>540,000</td><td>1,080,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">625,000</td><td>9,375</td><td>46,875</td><td>187,500</td><td>562,500</td><td>1,125,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">675,000</td><td>10,125</td><td>50,625</td><td>202,500</td><td>607,500</td><td>1,215,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">700,000</td><td>10,500</td><td>52,500</td><td>210,000</td><td>630,000</td><td>1,260,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">750,000</td><td>11,250</td><td>56,250</td><td>225,000</td><td>675,000</td><td>1,350,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">800,000</td><td>12,000</td><td>60,000</td><td>240,000</td><td>720,000</td><td>1,440,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">900,000</td><td>13,500</td><td>67,500</td><td>270,000</td><td>810,000</td><td>1,620,000</td></tr>
+                  <tr><td style="color:#CE93D8;font-weight:700;">1,000,000</td><td>15,000</td><td>75,000</td><td>300,000</td><td>900,000</td><td>1,800,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLAN 4: 35% -->
+        <div class="plan-content" id="planTab3" style="display:none;">
+          <div class="card" style="border-color:rgba(230,81,0,.4);padding:0;overflow:hidden;">
+            <div style="background:rgba(230,81,0,.2);padding:14px 16px;border-bottom:1px solid rgba(230,81,0,.3);">
+              <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#FFA726;">35% Plan</div>
+              <div style="font-size:12px;color:var(--soft);opacity:.7;margin-top:2px;">Rs. 1,000,000 – 10,000,000 | Daily 1.75% | Weekly 8.75% | Monthly 35%</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="plans-table">
+                <thead><tr><th>Amount (Rs.)</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>3 Months</th><th>6 Months</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#FFA726;font-weight:700;">1,000,000</td><td>17,500</td><td>87,500</td><td>350,000</td><td>1,050,000</td><td>2,100,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">1,100,000</td><td>19,250</td><td>96,250</td><td>385,000</td><td>1,155,000</td><td>2,310,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">1,500,000</td><td>26,250</td><td>131,250</td><td>525,000</td><td>1,575,000</td><td>3,150,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">2,500,000</td><td>43,750</td><td>218,750</td><td>875,000</td><td>2,625,000</td><td>5,250,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">3,000,000</td><td>52,500</td><td>262,500</td><td>1,050,000</td><td>3,150,000</td><td>6,300,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">4,000,000</td><td>70,000</td><td>350,000</td><td>1,400,000</td><td>4,200,000</td><td>8,400,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">5,000,000</td><td>87,500</td><td>437,500</td><td>1,750,000</td><td>5,250,000</td><td>10,500,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">7,500,000</td><td>131,250</td><td>656,250</td><td>2,625,000</td><td>7,875,000</td><td>15,750,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">8,000,000</td><td>140,000</td><td>700,000</td><td>2,800,000</td><td>8,400,000</td><td>16,800,000</td></tr>
+                  <tr><td style="color:#FFA726;font-weight:700;">10,000,000</td><td>175,000</td><td>875,000</td><td>3,500,000</td><td>10,500,000</td><td>21,000,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAPITAL RETURN -->
+        <div class="section-title" style="margin-top:8px;">Capital Return Plan</div>
+        <div class="card">
+          <div class="cap-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="cap-card"><div class="cap-months">1 Month (Min)</div><div class="cap-pct" style="color:var(--gold)">90%</div><div class="cap-sub">capital returned</div></div>
+            <div class="cap-card"><div class="cap-months">3 Months</div><div class="cap-pct" style="color:var(--green)">80%</div><div class="cap-sub">capital returned</div></div>
+            <div class="cap-card"><div class="cap-months">6 Months</div><div class="cap-pct" style="color:var(--teal)">60%</div><div class="cap-sub">capital returned</div></div>
+          </div>
+          <div class="note" style="margin-top:14px;"><strong>📌 Note:</strong> Minimum investment Rs. 5,000. Capital return % same for all plans. Daily, Weekly & Monthly profits credited throughout the period.</div>
         </div>
       </div>
 
@@ -510,17 +649,18 @@ hr.divider{border:none;height:1px;background:linear-gradient(90deg,transparent,r
 
 <script>
 const TIERS=[
-  {min:5000,   max:50000,   daily:null, weekly:2.5,  label:'Plan 01',payment:'weekly'},
-  {min:51000,  max:100000,  daily:0.75, weekly:3.75, label:'Plan 02',payment:'both'},
-  {min:101000, max:500000,  daily:1.0,  weekly:5.0,  label:'Plan 03',payment:'both'},
-  {min:501000, max:1000000, daily:1.25, weekly:6.25, label:'Plan 04',payment:'both'},
-  {min:1001000,max:Infinity,daily:1.5,  weekly:7.5,  label:'Plan 05',payment:'both'},
+  {min:5000,   max:100000,   daily:1.0,  weekly:5.0,  monthly:20, label:'Monthly 20% Plan', color:'#2196F3', payment:'both'},
+  {min:100001, max:500000,   daily:1.25, weekly:6.25, monthly:25, label:'25% Plan',           color:'#4CAF50', payment:'both'},
+  {min:500001, max:1000000,  daily:1.5,  weekly:7.5,  monthly:30, label:'30% Plan',           color:'#9C27B0', payment:'both'},
+  {min:1000001,max:10000000, daily:1.75, weekly:8.75, monthly:35, label:'35% Plan',           color:'#FF9800', payment:'both'},
 ];
-const CAP={3:80,6:70,9:60,12:50};
+const CAP_1M=90;   // 1 Month  → 90% capital back (all plans)
+const CAP_3M=80;   // 3 Months → 80% capital back (all plans)
+const CAP_6M=60;   // 6 Months → 60% capital back (all plans)
 const ADMIN_WHATSAPP='+94XXXXXXXXX'; // ← ඔබේ admin WhatsApp number
 const TG_TOKEN='8971460346:AAF5LJZM2cdFwg4q5DAKBqZwgWv3Bt8jwe0'; // ← BotFather ෙකන් revoke කරලා new token දාන්න
 const TG_CHAT_ID='8268217584';
-let selectedPeriod=3;
+let selectedPeriod=1;
 
 // ── FIRESTORE SAVE ──
 async function saveReg(data){
@@ -592,7 +732,7 @@ function calculate(){
   const badge=document.getElementById('tierBadge');
   if(!amount||amount<5000){
     badge.className='tier-badge none';
-    badge.textContent=amount>0&&amount<5000?'⚠ Below minimum — Rs. 5,000 required':'⬆ Minimum investment: Rs. 5,000';
+    badge.textContent=amount>0&&amount<5000?'⚠ Below minimum — Rs. 5,000 required':'⬆ Minimum investment: Rs. 5,000 | Plans: 20% / 25% / 30% / 35%';
     document.getElementById('emptyState').style.display='';
     document.getElementById('resultsContent').style.display='none';
     return;
@@ -600,43 +740,46 @@ function calculate(){
   const tier=getTier(amount);
   if(!tier){badge.className='tier-badge none';badge.textContent='⚠ Not in any plan range';return;}
   const ti=TIERS.indexOf(tier);
+  const tierColors=['#2196F3','#4CAF50','#9C27B0','#FF9800'];
   badge.className='tier-badge tier-'+(ti+1);
-  badge.innerHTML='✦ '+tier.label+' — Rs. '+TIERS[ti].min.toLocaleString()+' to '+(TIERS[ti].max===Infinity?'Above':('Rs. '+TIERS[ti].max.toLocaleString()));
+  badge.style.borderColor=tierColors[ti];
+  badge.style.color=tierColors[ti];
+  const dailyInfo = amount>=11000 ? 'Daily '+tier.daily+'%' : 'No Daily (Rs.11,000+)';
+  badge.innerHTML='✦ '+tier.label+' | '+dailyInfo+' | Weekly '+tier.weekly+'% | Monthly '+tier.monthly+'%';
 
   const weekly=amount*(tier.weekly/100);
   const daily=tier.daily?amount*(tier.daily/100):null;
-  const capPct=CAP[selectedPeriod];
+  const monthly=amount*(tier.monthly/100);
+  const capPct=selectedPeriod===1?CAP_1M:selectedPeriod===3?CAP_3M:CAP_6M;
   const capAmt=amount*(capPct/100);
   const weeks=selectedPeriod*4.33;
-  const totalW=weekly*Math.round(weeks);
+  const totalProfit=monthly*selectedPeriod;
 
   document.getElementById('emptyState').style.display='none';
   document.getElementById('resultsContent').style.display='';
 
-  if(daily!==null){
-    document.getElementById('dailyProfit').textContent=fmt(daily);
-    document.getElementById('dailyRate').textContent=tier.daily+'% of investment';
-    document.getElementById('dailyBadge').innerHTML='';
-  } else {
-    document.getElementById('dailyProfit').textContent='—';
-    document.getElementById('dailyRate').textContent='Not available';
-    document.getElementById('dailyBadge').innerHTML='<div class="payment-badge pb-weekly">Weekly only</div>';
-  }
+  const showDaily = amount >= 11000;
+  document.getElementById('dailyProfit').textContent=showDaily?fmt(daily||0):'—';
+  document.getElementById('dailyRate').textContent=showDaily?(tier.daily+'% per day'):'Rs. 11,000+ ෙකදී ලැබෙනවා';
+  if(document.getElementById('dailyBadge')) document.getElementById('dailyBadge').innerHTML=showDaily?'':'<div class="payment-badge pb-weekly" style="margin-top:6px;">⚠ Weekly & Monthly only</div>';
   document.getElementById('weeklyProfit').textContent=fmt(weekly);
-  document.getElementById('weeklyRate').textContent=tier.weekly+'% of investment';
-  document.getElementById('paymentMethod').innerHTML=tier.payment==='both'?'<div class="payment-badge pb-both">📅 Daily & Weekly</div>':'<div class="payment-badge pb-weekly">📅 Weekly Only</div>';
-  document.getElementById('periodTotal').textContent=fmt(totalW);
-  document.getElementById('periodLabel').textContent='~'+Math.round(weeks)+' weeks profit';
-  document.getElementById('capitalReturn').textContent=fmt(capAmt);
-  document.getElementById('capitalPctSub').textContent=capPct+'% of investment';
+  document.getElementById('weeklyRate').textContent=tier.weekly+'% per week';
+  document.getElementById('monthlyProfit').textContent=fmt(monthly);
+  document.getElementById('monthlyRate').textContent=tier.monthly+'% per month';
+  document.getElementById('periodTotal').textContent=fmt(totalProfit);
+  document.getElementById('periodLabel').textContent=selectedPeriod+' months x '+tier.monthly+'% = '+fmt(totalProfit);
+
   document.getElementById('periodMonths').textContent=selectedPeriod;
   document.getElementById('capitalPctBig').textContent=capPct+'%';
   document.getElementById('capitalBar').style.width=capPct+'%';
   document.getElementById('investedAmt').textContent=fmt(amount);
   document.getElementById('returnAmt').textContent=fmt(capAmt);
-  let note='<strong>📌 Note:</strong> ';
-  if(tier.payment==='weekly') note+='Below Rs. 50,000 → <strong>weekly profit only</strong>. ';
-  note+='After <strong>'+selectedPeriod+' months</strong>, <strong>'+capPct+'%</strong> capital ('+fmt(capAmt)+') returned. Total profit: <strong>'+fmt(totalW)+'</strong>.';
+  const dailyNote2 = amount>=11000?'Daily <strong>'+tier.daily+'%</strong> ('+fmt(daily)+') | ':'Daily profit available from Rs.11,000+ | ';
+  const note='<strong>📌 Note:</strong> '+tier.label+' — '+dailyNote2+
+    'Weekly <strong>'+tier.weekly+'%</strong> ('+fmt(weekly)+') | '+
+    'Monthly <strong>'+tier.monthly+'%</strong> ('+fmt(monthly)+') | '+
+    'After <strong>'+selectedPeriod+' month'+(selectedPeriod>1?'s':'')+
+    '</strong>: <strong>'+capPct+'%</strong> capital ('+fmt(capAmt)+') returned.';
   document.getElementById('noteBox').innerHTML=note;
 }
 
@@ -831,6 +974,14 @@ function logoutUser(){
 }
 
 calculate();
+
+// Plan tabs
+function showPlanTab(idx, btn){
+  document.querySelectorAll('.plan-content').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.plan-tab-btn').forEach(b=>b.style.opacity='.5');
+  document.getElementById('planTab'+idx).style.display='';
+  btn.style.opacity='1';
+}
 </script>
 </body>
 </html>
